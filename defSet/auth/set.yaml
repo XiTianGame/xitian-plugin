@@ -1,0 +1,9 @@
+#选择插件操作等级
+# 主人master,群主owner,群管理admin,所有人everyone
+grade:
+ - master
+#授权插件操作的用户QQ
+accredit:
+ - 12345
+#是否允许群聊操作
+group: true

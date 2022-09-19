@@ -1,0 +1,5 @@
+#分组排除的文件夹,排除后不会同步进分组
+rule:
+ - system
+ - other
+ - genshin

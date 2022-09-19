@@ -1,0 +1,73 @@
+- group: 安装插件
+  list:
+    - icon: install
+      title: "#安装插件"
+      desc: 安装单个js插件
+    - icon: batch
+      title: "#(开始/结束)批量安装插件"
+      desc: 一次性安装多个插件
+- group: 插件管理
+  list:
+    - icon: disable
+      title: "#停用插件 xxx"
+      desc: 停用名为 xxx 的js插件
+    - icon: enable
+      title: "#启用插件 xxx"
+      desc: 启用名为 xxx 的js插件
+    - icon: delete
+      title: "#删除插件 xxx"
+      desc: 将名为 xxx 的js插件移动至回收站
+    - icon: fuldelete
+      title: "#彻底删除插件 xxx"
+      desc: 将名为 xxx 的js插件直接移除
+    - icon: restore
+      title: "#恢复插件 xxx"
+      desc: 从回收站恢复名为 xxx 的js插件
+    - icon: rename
+      title: "#插件 xxx 重命名 xxx"
+      desc: 重命名名为 xxx 的插件
+- group: 查看插件
+  list:
+    - icon: list
+      title: "#插件列表"
+      desc: 查看所有分组的插件
+    - icon: find
+      title: "#查找插件 xxx"
+      desc: 从所有分组查找名为 xxx 的js插件
+    - icon: look
+      title: "#查看回收站"
+      desc: 查看回收站内的全部插件
+    - icon: clear
+      title: "#清空回收站"
+      desc: 清空回收站内的全部插件
+- group: 插件分组
+  list:
+    - icon: gplist
+      title: "#分组列表"
+      desc: 查看所有的分组
+    - icon: create
+      title: "#创建分组 xxx"
+      desc: 创建名为xxx的分组
+    - icon: remove
+      title: "#删除分组 xxx"
+      desc: 删除名为xxx的分组
+    - icon: set
+      title: "# xxx设置分组+分组名"
+      desc: 设置名为xxx插件的分组
+    - icon: sync
+      title: "#同步分组"
+      desc: 同步plugins目录下的分组
+- group: 其他指令
+  list:
+    - icon: version
+      title: "#插件版本"
+      desc: 查看当前插件版本
+    - icon: update
+      title: "#插件(强制)更新"
+      desc: 更新插件管理器
+    - icon: help
+      title: "#插件帮助"
+      desc: 查看插件管理器帮助
+    - icon: log
+      title: "#插件更新日志"
+      desc: 插件管理器的更新日志

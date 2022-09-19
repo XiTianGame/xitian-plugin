@@ -1,0 +1,10 @@
+#默认安装分组
+default_group: example
+#单个js插件极限大小
+maxSize: 6291456
+#是否开启智能重命名
+auto_rename: true
+#是否开启智能安装
+auto_install: true
+#插件安装等待时间，单位秒
+timeout: 60
