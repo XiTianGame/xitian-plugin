@@ -42,10 +42,10 @@ class install {
 					//根据插件不同的状态分类处理
 					switch (sameplugin.pluginState[0]) {
 						case '启用':
-							fs.renameSync(`${this.plugins.group[this.default_num]}${sameplugin.pluginname[0]}`, `${this.plugins.bin}${sameplugin.pluginname[0]}.bak`)
+							fs.renameSync(`${sameplugin.pluginPath[0]}${sameplugin.pluginname[0]}`, `${this.plugins.bin}${sameplugin.pluginname[0]}.bak`)
 							break;
 						case '停用':
-							fs.renameSync(`${this.plugins.group[this.default_num]}${sameplugin.pluginname[0]}`, `${this.plugins.bin}${sameplugin.pluginname[0]}`)
+							fs.renameSync(`${sameplugin.pluginPath[0]}${sameplugin.pluginname[0]}`, `${this.plugins.bin}${sameplugin.pluginname[0]}`)
 							break;
 						default://回收站的不做处理
 					}
@@ -60,10 +60,10 @@ class install {
 					for (num = sameplugin.number - 1; num >= 0; num--) {
 						switch (sameplugin.pluginState[num]) {
 							case '启用':
-								fs.renameSync(`${this.plugins.group[this.default_num]}${sameplugin.pluginname[num]}`, `${this.plugins.bin}${sameplugin.pluginname[num]}.bak`)
+								fs.renameSync(`${sameplugin.pluginPath[num]}${sameplugin.pluginname[num]}`, `${this.plugins.bin}${sameplugin.pluginname[num]}.bak`)
 								break;
 							case '停用':
-								fs.renameSync(`${this.plugins.group[this.default_num]}${sameplugin.pluginname[num]}`, `${this.plugins.bin}${sameplugin.pluginname[num]}`)
+								fs.renameSync(`${sameplugin.pluginPath[num]}${sameplugin.pluginname[num]}`, `${this.plugins.bin}${sameplugin.pluginname[num]}`)
 								break;
 							default://回收站的会直接删除
 								fs.unlink(`${this.plugins.bin}${sameplugin.pluginname[num]}`, () => { })
