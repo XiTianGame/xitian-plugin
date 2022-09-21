@@ -105,7 +105,7 @@ export class PluginInstall extends plugin {
 			my[e.user_id] = true;
 			my["批量"] = true;
 
-			return this.jsFile(e);//消息包含js文件，直接安装
+			return this.Msg(e);
 		}
 
 		if (keyword == "结束") {
@@ -167,13 +167,13 @@ export class PluginInstall extends plugin {
 				return true;
 			}
 
-			let textPath = `${plugins.group[default_num]}${e.file.name}`;
-			if (config.auto_rename) {
-				textPath = textPath.replace(/v3|V3|\[.*?\]|\(.*?\)|\（.*?\）|\[.*?\]|\【.*?\】|\-|\_|[0-9]+/g, "");//重新命名插件
-			}
+			let textPath = plugins.group[default_num];
 			//获取下载链接
 			let fileUrl = await e.friend.getFileUrl(e.file.fid);
 			let filename = e.file.name;
+			if (config.auto_rename) {
+				filename = filename.replace(/v3|V3|\[.*?\]|\(.*?\)|\（.*?\）|\[.*?\]|\【.*?\】|\-|\_|[0-9]+/g, "");//重新命名插件
+			}
 			await install.install(fileUrl, textPath, filename, e.user_id);//调用安装函数
 			cancel(e);
 			return true;
@@ -202,13 +202,13 @@ export class PluginInstall extends plugin {
 				e.reply(`超过${config.timeout}秒未发送消息，批量安装已结束~`)
 			}, config.timeout * 1000);//等待js文件
 
-			let textPath = `${plugins.group[default_num]}${e.file.name}`;
-			if (config.auto_rename) {
-				textPath = textPath.replace(/v3|V3|\[.*?\]|\(.*?\)|\（.*?\）|\[.*?\]|\【.*?\】|\-|\_|[0-9]+/g, "");//重新命名插件
-			}
+			let textPath = plugins.group[default_num];
 			//获取下载链接
 			let fileUrl = await e.friend.getFileUrl(e.file.fid);
 			let filename = e.file.name;
+			if (config.auto_rename) {
+				filename = filename.replace(/v3|V3|\[.*?\]|\(.*?\)|\（.*?\）|\[.*?\]|\【.*?\】|\-|\_|[0-9]+/g, "");//重新命名插件
+			}
 			await install.install(fileUrl, textPath, filename, e.user_id);//调用安装函数
 			return true;
 		}
