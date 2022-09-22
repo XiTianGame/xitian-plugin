@@ -156,7 +156,8 @@ export class PluginGroup extends plugin {
             }
         })
         ConfigSet.saveSet("group", "set", "config", plugins);
-        e.reply("同步完成");
+        e.reply(`同步完成！当前分组列表：`);
+        this.list(e);
         return true
     }
 }
