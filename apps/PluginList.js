@@ -37,7 +37,7 @@ export class PluginList extends plugin {
 			nickname: Bot.nickname,
 			user_id: cfg.qq,
 		}];
-		for (let num = 0; num < plugins.group.length; num++) {
+		for (let num in plugins.group) {
 			const files = (await search.read()).plugins;
 			let msg1 = files[num].map(file => {
 				if (file.endsWith(".js"))
@@ -47,10 +47,15 @@ export class PluginList extends plugin {
 				if (file.endsWith(".js.bak"))
 					return ` \n${file.replace(/.js.bak/g, "")}`;
 			});
+			let msg3 = files[num].map(file => {
+				if (!file.endsWith(".js")&&!file.endsWith(".js.bak"))
+					return file;
+			});
 			msg1 = msg1.join(",").replace(/,/g, "");
 			msg2 = msg2.join(",").replace(/,/g, "");
+			msg3 = msg3.join(",").replace(/,/g, "");
 			msg.push({
-				message: `位于${plugins.group[num].replace(/plugins|\//g, "")}分组下的插件\n已启用的插件：\n${msg1}\n\n已停用的插件：\n${msg2}`,
+				message: `位于${plugins.group[num].replace(/plugins|\//g, "")}分组下的插件\n已启用的插件：\n${msg1}\n\n已停用的插件：\n${msg2}\n\n未知文件：\n${msg3}`,
 				nickname: Bot.nickname,
 				user_id: cfg.qq,
 			});
