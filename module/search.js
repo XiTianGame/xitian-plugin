@@ -73,10 +73,11 @@ class search {
 	 * 开始监视文件夹
 	 */
 	async startwatch(){
-		this.plugins.group.forEach(item => {
-			this.watch(item,"plugins_file");
-		});
-		this.watch(this.plugins.bin,"bin_file");
+		await this.read();
+		for(let i in this.plugins.group){
+			this.watch(this.plugins.group[i],"plugins_file",i)
+		}
+		this.watch(this.plugins.bin,"bin_file")
 	}
 
 	/**
@@ -85,8 +86,8 @@ class search {
 	async read() {
 		if (!this.plugins_file) {
 			this.plugins_file = [];
-			for (let tmp in this.plugins.group) {
-				this.plugins_file.push(fs.readdirSync(this.plugins.group[tmp]));
+			for (let tmp of this.plugins.group) {
+				this.plugins_file.push(fs.readdirSync(tmp));
 			}
 		}
 		if (!this.bin_file) {
@@ -101,20 +102,33 @@ class search {
 	/**
 	 * 监听文件夹
 	 * @param file 监听目录  
-	 * @param filename 对应列表名
+	 * @param group 对应列表名
+	 * @param num 插件分组位置
 	 */
-	async watch(file, filename) {
+	async watch(file, group ,num = "戏天出品") {
+		//转换文件路径
+		const _file = file.replace(/\//g,"\\")
 		const watcher = chokidar.watch(file,{
 			//忽略开始监控的文件添加
 			ignoreInitial:true,
 			persistent:true,
 			cwd: '.',
 		});
-		watcher.on("all", (path) => {
-			if (this[filename]) {
-				delete this[filename];
+		watcher.on("add", (path) => {
+			if(!isNaN(num)){
+				this[group][num].push(path.replace(_file,""))
+			}else{
+				this[group].push(path.replace(_file,""))
 			}
-		});
+		}).on("unlink",(path)=>{
+			if(!isNaN(num)){
+				let id = this[group][num].indexOf(path.replace(_file,""));
+				this[group][num].splice(id,1);
+			}else{
+				let id = this[group].indexOf(path.replace(_file,""));
+				this[group].splice(id,1);
+			}
+		})
 	}
 }
 
