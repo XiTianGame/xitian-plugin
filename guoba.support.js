@@ -65,6 +65,12 @@ export function supportGuoba() {
             component: 'Switch',
           },
           {
+            field: 'js.auto_check',
+            label: '插件核验',
+            bottomHelpMessage: '是否开启插件智能核验',
+            component: 'Switch',
+          },
+          {
             field: 'js.timeout',
             label: '等待时间',
             helpMessage: '插件安装指令的等待时间',
@@ -139,7 +145,7 @@ export function supportGuoba() {
         
         // 设置配置的方法（前端点确定后调用的方法）
         setConfigData(data, {Result}) {
-          console.log(data)
+
           //先读取一下配置
           let JSData = cfg.getConfig("js", "set");
           let ExcludeData = cfg.getConfig("exclude", "set");

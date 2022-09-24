@@ -158,7 +158,7 @@ export class PluginManager extends plugin {
 					return true;
 				}
 				fs.renameSync(`${tmp.pluginPath[0]}${tmp.pluginname[0]}`, `${tmp.pluginPath[0]}${msg}.js`)
-				e.reply(`已启用：${msg}` + "\n立即生效呢~")
+				e.reply(`已启用：${msg}` + "\n重启后生效呢~")
 			} else {
 				e.reply("该插件处于已删除状态\n请先恢复插件哦");
 				return true;
@@ -256,7 +256,7 @@ export class PluginManager extends plugin {
 					}
 					fs.renameSync(`${plugins.bin}${msg}.js.bak`, `${plugins.group[default_num]}${msg}.js`)
 				}
-				e.reply(`已恢复：${msg}` + "\n立即生效呢~")
+				e.reply(`已恢复：${msg}` + "\n重启后生效呢~")
 			}
 		} else if (tmp.number > 1) {
 			e.reply("找到多个插件，请指定准确的插件名哦");
