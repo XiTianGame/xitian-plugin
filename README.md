@@ -45,7 +45,7 @@ js插件可以从[插件库](https://gitee.com/Hikari666/Yunzai-Bot-plugins-inde
 git clone https://github.com/XiTianGame/xitian-plugin.git ./plugins/xitian-plugin/
 ```
 
-使用[gitee仓库](https://gitee.com/XiTianGame/xitian-plugin)
+使用[gitee仓库](https://gitee.com/XiTianGame/xitian-plugin)(可能更新不及时)
 ```bash
 git clone https://gitee.com/XiTianGame/xitian-plugin ./plugins/xitian-plugin/
 ```
