@@ -44,13 +44,12 @@ js插件可以从[插件库](https://gitee.com/Hikari666/Yunzai-Bot-plugins-inde
 ```bash
 git clone https://github.com/XiTianGame/xitian-plugin.git ./plugins/xitian-plugin/
 ```
-<!---
-被你发现了哈哈哈，gitee仓库咕咕中
-使用[gitee仓库](https://gitee.com/drama-days/xitian-plugin)
+
+使用[gitee仓库](https://gitee.com/XiTianGame/xitian-plugin)
 ```bash
-git clone https://gitee.com/drama-days/xitian-plugin ./plugins/xitian-plugin/
+git clone https://gitee.com/XiTianGame/xitian-plugin ./plugins/xitian-plugin/
 ```
--->
+
 
 ### 更新
 
