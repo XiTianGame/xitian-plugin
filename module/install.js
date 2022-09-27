@@ -73,11 +73,9 @@ class install {
 				case 0:
 					await streamPipeline(response.body, fs.createWriteStream(path.join(filePath, `${filename}.bak`)));
 					//核验插件
-					if (this.config.auto_check) {
-						await this.check(path.join(filePath, `${filename}.bak`), id);
+					if (await this.check(path.join(filePath, `${filename}.bak`), id)) {
+						Bot.pickFriend(id).sendMsg("此插件已安装，重启后生效~");
 					}
-					await common.sleep(200);//防止消息重叠
-					Bot.pickFriend(id).sendMsg("此插件已安装，重启后生效~");
 					break;
 				case 1:
 					Bot.pickFriend(id).sendMsg(`检测到相似插件:${sameplugin.pluginname[0].replace(/.js|.bak/g, "")}，正在执行覆盖安装`);
@@ -92,12 +90,11 @@ class install {
 						default://回收站的不做处理
 					}
 					await streamPipeline(response.body, fs.createWriteStream(path.join(filePath, `${filename}.bak`)));
-					//核验插件
-					if (this.config.auto_check) {
-						await this.check(path.join(filePath, `${filename}.bak`), id);
-					}
 					await common.sleep(200);//防止消息重叠
-					Bot.pickFriend(id).sendMsg("此插件已覆盖安装，重启后生效~");
+					//核验插件
+					if (await this.check(path.join(filePath, `${filename}.bak`), id)) {
+						Bot.pickFriend(id).sendMsg("此插件已覆盖安装，重启后生效~");
+					}
 					break;
 				default:
 					Bot.pickFriend(id).sendMsg("检测到多个相似插件，正在进行处理...");
@@ -115,12 +112,11 @@ class install {
 						}
 					}
 					await streamPipeline(response.body, fs.createWriteStream(path.join(filePath, `${filename}.bak`)));
-					//核验插件
-					if (this.config.auto_check) {
-						await this.check(path.join(filePath, `${filename}.bak`), id);
-					}
 					await common.sleep(200);//防止消息重叠
-					Bot.pickFriend(id).sendMsg("处理完成！此插件已覆盖安装，重启后生效~");
+					//核验插件
+					if (await this.check(path.join(filePath, `${filename}.bak`), id)) {
+						Bot.pickFriend(id).sendMsg("处理完成！此插件已覆盖安装，重启后生效~");
+					}
 			}
 		} else {
 			//没开启智能安装直接无脑覆盖
@@ -129,11 +125,9 @@ class install {
 			const streamPipeline = promisify(pipeline);
 			await streamPipeline(response.body, fs.createWriteStream(path.join(textPath, `${filename}.bak`)));
 			//核验插件
-			if (this.config.auto_check) {
-				await this.check(path.join(filePath, `${filename}.bak`), id);
+			if(await this.check(path.join(filePath, `${filename}.bak`), id)){
+				Bot.pickFriend(id).sendMsg("此插件已安装，重启后生效~");
 			}
-			await common.sleep(200);//防止消息重叠
-			Bot.pickFriend(id).sendMsg("此插件已安装，重启后生效~");
 		}
 	}
 
@@ -143,6 +137,10 @@ class install {
 	 * @param {Number} id 发送核验结果的用户QQ
 	 */
 	async check(filepath, id) {
+		if (!this.config.auto_check) {
+			fs.renameSync(filepath, filepath.substring(0, filepath.length - 4));
+			return true;
+		}
 		//读取插件
 		let content = fs.readFileSync(filepath, 'utf8', (error) => {
 			Bot.pickFriend(id).sendMsg("插件读取出现问题，核验已终止");
