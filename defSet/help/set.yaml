@@ -26,6 +26,9 @@
     - icon: rename
       title: "#插件 xxx 重命名 xxx"
       desc: 重命名名为 xxx 的插件
+    - icon: upload
+      title: "#查看插件 xxx"
+      desc: 发送名为 xxx 的插件
 - group: 查看插件
   list:
     - icon: list

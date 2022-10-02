@@ -52,8 +52,12 @@ export class PluginManager extends plugin {
 					fnc: 'rec'
 				},
 				{
-					reg: '^#插件(.*)重命名(.*)',
+					reg: '^#插件(.*)重命名(.*)$',
 					fnc: 'rename'
+				},
+				{
+					reg: '^#查看插件(.*)$',
+					fnc: 'upload'
 				}
 			]
 		})
@@ -265,6 +269,10 @@ export class PluginManager extends plugin {
 	}
 
 	async rename(e) {
+		if (!common.auth(e)) {
+			return true;
+		}
+
 		let key = e.msg.replace("#插件", "").split("重命名");
 		if (key.length > 2) {
 			for (let num = 2; num < key.length; num++) {
@@ -282,7 +290,33 @@ export class PluginManager extends plugin {
 				break;
 			default:
 				e.reply("找到多个插件，请指定准确的插件名哦")
-				return true;
 		}
+		return true;
+	}
+
+	async upload(e){
+		if (!common.auth(e)) {
+			return true;
+		}
+
+		let key = e.msg.replace("#查看插件","");
+		let tmp = await search.find(key,1);
+		switch(tmp.number){
+			case 0:
+				e.reply("未找到该插件")
+				break;
+			case 1:
+				if(e.isGroup){
+					//上传到群文件
+					Bot.pickGroup(e.group_id).fs.upload(`${tmp.pluginPath}/${tmp.pluginname}`);
+				}else{
+					//发送离线文件
+					Bot.pickFriend(e.user_id).sendFile(`${tmp.pluginPath}/${tmp.pluginname}`);
+				}
+				break;
+			default:
+				e.reply("找到多个插件，请指定准确的插件名哦")
+		}
+		return true;
 	}
 }
