@@ -27,7 +27,7 @@ export class PluginInstall extends plugin {
 			priority: 5,
 			rule: [
 				{
-					reg: '^#(安装|新增|增加)插件$',
+					reg: '^#(安装|新增|增加)插件(https://(github|gitee).com/(.*)/(.*))?$',
 					fnc: 'New'
 				},
 				{
@@ -51,7 +51,12 @@ export class PluginInstall extends plugin {
 		if (!common.auth(e)) {
 			return true;
 		}
-
+		//判断是否包含git链接
+		let url = e.msg.replace(/#|安装|新增|增加|插件/g, "");
+		if (url) {
+			return await install.clone(url, e);
+		}
+		//是否包含文件
 		if (!e.file) {
 			if (my[e.user_id]) {
 				clearTimeout(my[e.user_id]);
@@ -125,7 +130,7 @@ export class PluginInstall extends plugin {
 		if (!my[e.user_id] && !confirm[e.user_id]) {
 			return false;
 		}
-		if(e.raw_message.includes("请发送js插件")||e.raw_message.includes("发送的不是js插件呢")){
+		if (e.raw_message.includes("请发送js插件") || e.raw_message.includes("发送的不是js插件呢")) {
 			return false;
 		}
 		//清空回收站的确认操作

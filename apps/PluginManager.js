@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import cfg from '../../../lib/config/config.js'
 import ConfigSet from "../module/ConfigSet.js";
+import uninstall from '../module/uninstall.js';
 import search from "../module/search.js";
 import common from "../module/common.js"
 import fs from 'fs';
@@ -177,21 +178,23 @@ export class PluginManager extends plugin {
 		if (!common.auth(e)) {
 			return true;
 		}
-
-		// 彻底删除，直接删除该文件
-
 		let msg = e.msg.replace("#", "")
-		if(msg.startsWith("彻底")){
-			msg = msg.replace("彻底删除插件","")
+		//检查是否是大型插件
+		if (await uninstall.removePlugin(e)) return true;
+
+		//彻底删除，直接删除该文件
+		if (msg.startsWith("彻底")) {
+			msg = msg.replace("彻底删除插件", "")
 			let tmp = await search.find(msg, 1);
-			if(fs.existsSync(`${tmp.pluginPath}${tmp.pluginname}`)){
-				fs.unlink(`${tmp.pluginPath}${tmp.pluginname}`,( )=>{});
+			if (fs.existsSync(`${tmp.pluginPath}${tmp.pluginname}`)) {
+				fs.unlink(`${tmp.pluginPath}${tmp.pluginname}`, () => { });
 				e.reply(`插件“${msg}”已经彻底删除，再也找不回来了哦~`)
 				return true
 			}
-		}else{
-			msg = msg.replace("删除插件","")
+		} else {
+			msg = msg.replace("删除插件", "")
 		}
+
 		//删除插件，移动到回收站
 		let tmp = await search.find(msg, 1);
 		let path;
@@ -294,22 +297,22 @@ export class PluginManager extends plugin {
 		return true;
 	}
 
-	async upload(e){
+	async upload(e) {
 		if (!common.auth(e)) {
 			return true;
 		}
 
-		let key = e.msg.replace("#查看插件","");
-		let tmp = await search.find(key,1);
-		switch(tmp.number){
+		let key = e.msg.replace("#查看插件", "");
+		let tmp = await search.find(key, 1);
+		switch (tmp.number) {
 			case 0:
 				e.reply("未找到该插件")
 				break;
 			case 1:
-				if(e.isGroup){
+				if (e.isGroup) {
 					//上传到群文件
 					Bot.pickGroup(e.group_id).fs.upload(`${tmp.pluginPath}/${tmp.pluginname}`);
-				}else{
+				} else {
 					//发送离线文件
 					Bot.pickFriend(e.user_id).sendFile(`${tmp.pluginPath}/${tmp.pluginname}`);
 				}

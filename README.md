@@ -1,8 +1,16 @@
+<p align="center">
+  <a href="https://github.com/XiTianGame/xitian-plugin">
+    <img width="200" src="https://github.com/XiTianGame/xitian-plugin/raw/master/resources/img/head.jpg">
+  </a>
+</p>
+
 # 插件管理器xitian-plugin
 
 ## 不适配V2，V2装了直接G
 
-- 仅支持js类插件管理，不支持喵喵插件等大型插件管理 
+~~仅支持js类插件管理，不支持喵喵插件等大型插件管理~~
+
+支持了一点，但不多(bushi)
 
 ## 已经实现的功能
 
@@ -23,6 +31,9 @@
 - [x] 插件管理权限控制
 - [x] 插件核验
     - [x] V2插件识别
+- [x] git插件管理
+    - [x] 插件通过网址安装
+    - [x] 删除git插件
 
 ### 介绍
 Yunzai-Bot V3 的插件
@@ -64,11 +75,14 @@ git clone https://gitee.com/XiTianGame/xitian-plugin ./plugins/xitian-plugin/
 - [插件库](https://gitee.com/Hikari666/Yunzai-Bot-plugins-index)
 
 ### 指令
+
 | 功能 | 指令 | 作用 |
 |----|----|----|
+| 安装git仓库插件 | #安装插件+仓库地址 | 从git仓库中克隆插件 |
 | (批量)安装插件 | #(批量)安装插件 | 通过QQ发送一个或多个js插件来安装 |
 | 停用/启用插件 | #停用/启用插件 | 暂时停用或启用一个插件 |
 | 删除/恢复插件 | #删除/恢复插件 | 暂时将一个插件扔到回收站 |
+| 删除git插件 | #删除插件+插件名(如xitian-plugin) | 删除git插件所有文件 |
 | 彻底删除插件 | #彻底插件 | 将一个插件彻底删除 |
 | 创建/删除分组 | #创建/删除分组 | 创建或删除一个插件分组 |
 | (插件)设置分组 | #(插件)设置分组 | 设置一个插件的分组，便于管理 |

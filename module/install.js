@@ -1,13 +1,19 @@
 import cfg from '../../../lib/config/config.js'
-import common from "../../../lib/common/common.js";
-import path from 'path';
-import search from './search.js';
-import ConfigSet from "./ConfigSet.js";
-import fetch from "node-fetch";
-import { pipeline } from "stream";
-import { promisify } from "util";
-import fs from 'fs';
+import common from "../../../lib/common/common.js"
+import { Restart } from "../../other/restart.js"
+import path from 'path'
+import search from './search.js'
+import ConfigSet from "./ConfigSet.js"
+import fetch from "node-fetch"
+import { createRequire } from 'module'
+import { pipeline } from "stream"
+import { promisify } from "util"
+import fs from 'fs'
 
+//云崽目录
+const _path = process.cwd();
+const require = createRequire(import.meta.url)
+const { exec, execSync } = require('child_process')
 
 class install {
 	constructor() {
@@ -125,7 +131,7 @@ class install {
 			const streamPipeline = promisify(pipeline);
 			await streamPipeline(response.body, fs.createWriteStream(path.join(textPath, `${filename}.bak`)));
 			//核验插件
-			if(await this.check(path.join(filePath, `${filename}.bak`), id)){
+			if (await this.check(path.join(filePath, `${filename}.bak`), id)) {
 				Bot.pickFriend(id).sendMsg("此插件已安装，重启后生效~");
 			}
 		}
@@ -156,6 +162,108 @@ class install {
 		fs.renameSync(filepath, filepath.substring(0, filepath.length - 4));
 		Bot.pickFriend(id).sendMsg("核验完成！该插件无问题");
 		return true;
+	}
+
+	/**
+	 * 安装github插件
+	 * @param url 插件地址
+	 * @param e 消息
+	 */
+	async clone(url, e) {
+		if (!url.endsWith(".git")) {
+			url = url + ".git";
+		}
+		/**插件名 */
+		let name = url.replace(/https:|github|gitee|.git/g, "").split("/");
+		name = name.pop();
+		e.reply(`开始安装：${name}`)
+
+		/**检查链接和插件 */
+		if (!await this.checkurl(url)) {
+			e.reply(`安装失败！无法连接到目标仓库`)
+			return true;
+		}
+
+		/**检查已安装情况 */
+		if (await this.checkname(name)) {
+			e.reply(`已经安装该插件，若该插件无法运行，可以尝试重新安装`)
+			return true;
+		}
+
+		/**检查git安装 */
+		if (!await this.checkGit(e)) return true;
+
+		/**执行安装命令 */
+		let command = `cd ${_path}/plugins && git clone ${url}`;
+		await this.execSync(command);
+
+		/**重启云崽 */
+		await e.reply("安装成功!即将进行重启...");
+		this.restart(e);
+		return true;
+	}
+
+	/**
+	 * 检查插件地址有效性
+	 * @param url 插件地址
+	 */
+	async checkurl(url) {
+		//检查链接
+		let response
+		try {
+			response = await fetch(url);
+		} catch (err) {
+			return false;
+		}
+		if (!response.status == 200) return false;
+
+		return true;
+	}
+
+	/**
+	 * 是否已经安装该插件
+	 * @param name 插件名
+	 */
+	async checkname(name) {
+		//检查重复插件
+		let list = fs.readdirSync(`${_path}/plugins`);
+		if (list.indexOf(name) > -1) return true;
+
+		return false;
+	}
+
+	/**
+   * 检查git是否安装
+   * @returns
+   */
+	async checkGit(e) {
+		let ret = await execSync('git --version', { encoding: 'utf-8' })
+		if (!ret || !ret.includes('git version')) {
+			await e.reply('请先安装git')
+			return false
+		}
+
+		return true
+	}
+
+	/**
+	 * 执行cmd命令
+	 * @param {string} cmd git命令
+	 * @returns
+	 */
+	async execSync(cmd) {
+		return new Promise((resolve, reject) => {
+			exec(cmd, { windowsHide: true }, (error, stdout, stderr) => {
+				resolve({ error, stdout, stderr })
+			})
+		})
+	}
+
+	/**
+	 * 重启云崽
+	 */
+	restart(e) {
+		new Restart(e).restart()
 	}
 }
 
