@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/XiTianGame/xitian-plugin">
-    <img width="200" src="https://github.com/XiTianGame/xitian-plugin/raw/master/resources/img/head.jpg">
+    <img width="200" src="resources/img/head.jpg">
   </a>
 </p>
 
