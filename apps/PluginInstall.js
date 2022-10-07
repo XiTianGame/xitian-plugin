@@ -157,6 +157,12 @@ export class PluginInstall extends plugin {
 			}
 			return false;
 		}
+		//不允许群聊安装插件
+		if (e.isGroup) {
+			e.reply("不允许群聊安装插件，安装已取消");
+			cancel(e);
+			return true;
+		}
 		//单个安装的操作
 		if (my[e.user_id] && my["单次"]) {
 
@@ -177,7 +183,7 @@ export class PluginInstall extends plugin {
 			let fileUrl = await e.friend.getFileUrl(e.file.fid);
 			let filename = e.file.name;
 			if (config.auto_rename) {
-				filename = filename.replace(/v3|V3|\[.*?\]|\(.*?\)|\（.*?\）|\[.*?\]|\【.*?\】|\-|\_|[0-9]+/g, "");//重新命名插件
+				filename = await common.rename(filename);//重新命名插件
 			}
 			await install.install(fileUrl, textPath, filename, e.user_id);//调用安装函数
 			cancel(e);
@@ -212,7 +218,7 @@ export class PluginInstall extends plugin {
 			let fileUrl = await e.friend.getFileUrl(e.file.fid);
 			let filename = e.file.name;
 			if (config.auto_rename) {
-				filename = filename.replace(/v3|V3|\[.*?\]|\(.*?\)|\（.*?\）|\[.*?\]|\【.*?\】|\-|\_|[0-9]+/g, "");//重新命名插件
+				filename = await common.rename(filename);//重新命名插件
 			}
 			await install.install(fileUrl, textPath, filename, e.user_id);//调用安装函数
 			return true;

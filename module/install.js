@@ -1,5 +1,6 @@
 import cfg from '../../../lib/config/config.js'
 import common from "../../../lib/common/common.js"
+import commons from '../module/common.js'
 import { Restart } from "../../other/restart.js"
 import path from 'path'
 import search from './search.js'
@@ -69,7 +70,7 @@ class install {
 	async install(fileUrl, textPath, filename, id = cfg.masterQQ[0]) {
 		//智能安装
 		if (this.config.auto_install && filename) {
-			let sameplugin = await search.find(filename.replace(/.js|.bak|v3|V3|\[.*?\]|\(.*?\)|\（.*?\）|\[.*?\]|\【.*?\】|\-|\_|[0-9]+/g, ""), 0);//提取插件关键名字
+			let sameplugin = await search.find((await commons.rename(filename)).replace(/.js|.bak/g, ""), 0);//提取插件关键名字
 			let filePath = await this.choose(textPath, sameplugin);
 			//下载output_log.txt文件
 			const response = await fetch(fileUrl);

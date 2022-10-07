@@ -75,7 +75,13 @@ class search {
 	async startwatch(){
 		await this.read();
 		for(let i in this.plugins.group){
+			if(!fs.existsSync(this.plugins.group[i])){
+				fs.mkdirSync(this.plugins.group[i])
+			}
 			this.watch(this.plugins.group[i],"plugins_file",i)
+		}
+		if(!fs.existsSync(this.plugins.bin)){
+			fs.mkdirSync(this.plugins.bin)
 		}
 		this.watch(this.plugins.bin,"bin_file")
 	}
