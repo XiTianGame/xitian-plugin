@@ -59,7 +59,7 @@ git clone https://github.com/XiTianGame/xitian-plugin.git ./plugins/xitian-plugi
 
 使用[gitee仓库](https://gitee.com/XiTianGame/xitian-plugin)(可能更新不及时)
 ```bash
-git clone https://gitee.com/XiTianGame/xitian-plugin ./plugins/xitian-plugin/
+git clone https://gitee.com/XiTianGame/xitian-plugin.git ./plugins/xitian-plugin/
 ```
 
 
