@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { Restart } from '../../other/restart.js';
 
 const _path = process.cwd();
 
@@ -18,7 +19,8 @@ class uninstall {
         if (!fs.statSync(`${path}/.git`).isDirectory()) return false;
 
         await this.deleteFolder(path);
-        e.reply(`成功删除：${name}`);
+        await e.reply(`成功删除：${name}`);
+        new Restart(e).restart();
         return true;
     }
 
