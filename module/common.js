@@ -11,7 +11,7 @@ class common {
      * 确认权限
      * @param e 消息
      */
-    async auth(e) {
+    auth(e) {
         //是否允许群聊
         if (!this.permis.group && e.isGroup) {
             return false;
