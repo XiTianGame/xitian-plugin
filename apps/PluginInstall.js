@@ -27,7 +27,7 @@ export class PluginInstall extends plugin {
 			priority: 5,
 			rule: [
 				{
-					reg: '^#(安装|新增|增加)插件(https://(github|gitee).com/(.*)/(.*))?$',
+					reg: '^#(安装|新增|增加)插件(https:\/\/(github|gitee).com\/[a-zA-Z0-9-]{1,39}\/[a-zA-Z0-9_-]{1,100})?$',
 					fnc: 'New'
 				},
 				{
