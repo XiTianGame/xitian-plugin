@@ -2,7 +2,7 @@ import fs from 'fs';
 import chokidar from "chokidar";
 import ConfigSet from "../module/ConfigSet.js";
 
-
+const Plugins = new Map()
 
 class search {
 	constructor() {
@@ -23,11 +23,11 @@ class search {
 		//读取插件列表
 		await this.read();
 		//历遍文件查找关键字
-		for (let tmp in this.plugins_file)
-			this.plugins_file[tmp].map((filename) => {
+		for (let group of this.plugins.group)
+		    Plugins.get(group).map((filename) => {
 				if (mode == 0) {
 					if (filename.includes(name)) {
-						pluginPath.push(this.plugins.group[tmp])
+						pluginPath.push(group)
 						pluginname.push(filename)
 						if (filename.endsWith('.bak')) {
 							pluginState.push("停用")
@@ -37,7 +37,7 @@ class search {
 				} else {
 					filename = filename.split(".");
 					if (filename[0] == name) {
-						pluginPath.push(this.plugins.group[tmp])
+						pluginPath.push(group)
 						pluginname.push(filename.join("."));
 						if (filename[filename.length - 1] == "bak") {
 							pluginState.push("停用")
@@ -47,7 +47,7 @@ class search {
 				}
 			});
 		//然后再看看辣姬箱
-		this.bin_file.map((filename) => {
+		Plugins.get(this.plugins.bin).map((filename) => {
 			if (mode == 0) {
 				if (filename.includes(name)) {
 					pluginPath.push(this.plugins.bin)
@@ -78,40 +78,33 @@ class search {
 			if(!fs.existsSync(this.plugins.group[i])){
 				fs.mkdirSync(this.plugins.group[i])
 			}
-			this.watch(this.plugins.group[i],"plugins_file",i)
+			this.watch(this.plugins.group[i])
 		}
 		if(!fs.existsSync(this.plugins.bin)){
 			fs.mkdirSync(this.plugins.bin)
 		}
-		this.watch(this.plugins.bin,"bin_file")
+		this.watch(this.plugins.bin)
 	}
 
 	/**
 	 * 读取插件列表
 	 */
 	async read() {
-		if (!this.plugins_file) {
-			this.plugins_file = [];
-			for (let tmp of this.plugins.group) {
-				this.plugins_file.push(fs.readdirSync(tmp));
-			}
+		for (let tmp of this.plugins.group) {
+			if(Plugins.has(tmp)) continue;
+			Plugins.set(tmp,fs.readdirSync(tmp))
 		}
-		if (!this.bin_file) {
-			this.bin_file = fs.readdirSync(this.plugins.bin)
+		if(!Plugins.has(this.plugins.bin)){
+			Plugins.set(this.plugins.bin,fs.readdirSync(this.plugins.bin))
 		}
-		return {
-			plugins: [...this.plugins_file],
-			bin: [...this.bin_file]
-		}
+		return Plugins
 	}
 
 	/**
 	 * 监听文件夹
 	 * @param file 监听目录  
-	 * @param group 对应列表名
-	 * @param num 插件分组位置
 	 */
-	async watch(file, group ,num = "戏天出品") {
+	async watch(file) {
 		//转换文件路径
 		const _file = file.replace(/\//g,"\\")
 		const watcher = chokidar.watch(file,{
@@ -121,19 +114,14 @@ class search {
 			cwd: '.',
 		});
 		watcher.on("add", (path) => {
-			if(!isNaN(num)){
-				this[group][num].push(path.replace(_file,""))
-			}else{
-				this[group].push(path.replace(_file,""))
-			}
+			let tmp = Plugins.get(file)||[]
+			tmp.push(path.replace(_file,""))
+			Plugins.set(file,tmp)
 		}).on("unlink",(path)=>{
-			if(!isNaN(num)){
-				let id = this[group][num].indexOf(path.replace(_file,""));
-				this[group][num].splice(id,1);
-			}else{
-				let id = this[group].indexOf(path.replace(_file,""));
-				this[group].splice(id,1);
-			}
+			let tmp = Plugins.get(file)||[]
+			let id = tmp.indexOf(path.replace(_file,""));
+			tmp.splice(id,1);
+			Plugins.set(file,tmp)
 		})
 	}
 }
