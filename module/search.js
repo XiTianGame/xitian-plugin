@@ -1,6 +1,9 @@
 import fs from 'fs';
 import chokidar from "chokidar";
+import lodash from "lodash"
 import ConfigSet from "../module/ConfigSet.js";
+
+const _path = process.cwd().replace(/\\/g,'/')
 
 const Plugins = new Map()
 
@@ -24,43 +27,39 @@ class search {
 		await this.read();
 		//历遍文件查找关键字
 		for (let group of this.plugins.group)
-		    Plugins.get(group).map((filename) => {
+		    Plugins.get(group).forEach((file) => {
 				if (mode == 0) {
-					if (filename.includes(name)) {
+					if (file.key.includes(name)) {
 						pluginPath.push(group)
-						pluginname.push(filename)
-						if (filename.endsWith('.bak')) {
-							pluginState.push("停用")
-						} else pluginState.push("启用")
+						pluginname.push(file.key)
+						pluginState.push(file.state)
 						number++
 					}
 				} else {
-					filename = filename.split(".");
-					if (filename[0] == name) {
+					let tmp = file.key.split(".");
+					if (tmp[0] == name) {
 						pluginPath.push(group)
-						pluginname.push(filename.join("."));
-						if (filename[filename.length - 1] == "bak") {
-							pluginState.push("停用")
-						} else pluginState.push("启用")
+						pluginname.push(file.key)
+						pluginState.push(file.state)
 						number++
 					}
 				}
 			});
 		//然后再看看辣姬箱
-		Plugins.get(this.plugins.bin).map((filename) => {
+		Plugins.get(this.plugins.bin).forEach((file) => {
 			if (mode == 0) {
-				if (filename.includes(name)) {
+				if (file.key.includes(name)) {
 					pluginPath.push(this.plugins.bin)
-					pluginname.push(filename)
-					pluginState.push("已删除")
+					pluginname.push(file.key)
+					pluginState.push(file.state)
 					number++
 				}
 			} else {
-				filename = filename.split(".");
-				if (filename[0].replace(/\[.*?\]/g, "") == name) {
+				let tmp = file.key.split(".");
+				if (tmp[0].replace(/\[.*?\]/g, "") == name) {
 					pluginPath.push(this.plugins.bin)
-					pluginname.push(filename.join("."))
-					pluginState.push("已删除")
+					pluginname.push(file.key)
+					pluginState.push(file.state)
 					number++
 				}
 			}
@@ -83,28 +82,83 @@ class search {
 		if(!fs.existsSync(this.plugins.bin)){
 			fs.mkdirSync(this.plugins.bin)
 		}
-		this.watch(this.plugins.bin)
+		this.watch(this.plugins.bin, true)
 	}
 
 	/**
 	 * 读取插件列表
 	 */
 	async read() {
-		for (let tmp of this.plugins.group) {
-			if(Plugins.has(tmp)) continue;
-			Plugins.set(tmp,fs.readdirSync(tmp))
+		for (let group of this.plugins.group) {
+			if(Plugins.has(group)) continue;
+			let Infos = [];
+			for(let file of fs.readdirSync(group)){
+				Infos.push({
+					...await this.parse(`${group}${file}`)
+				})
+			}
+			Plugins.set(group,Infos)
 		}
 		if(!Plugins.has(this.plugins.bin)){
-			Plugins.set(this.plugins.bin,fs.readdirSync(this.plugins.bin))
+			let Infos = [];
+			for(let file of fs.readdirSync(this.plugins.bin)){
+				Infos.push({
+					...await this.parse(`${this.plugins.bin}${file}`,true)
+				})
+			}
+			Plugins.set(this.plugins.bin,Infos)
 		}
 		return Plugins
 	}
 
 	/**
-	 * 监听文件夹
-	 * @param file 监听目录  
+	 * 解析插件
+	 * @param path 文件路径
+	 * @param isBin 是否是回收站
 	 */
-	async watch(file) {
+	async parse(path,isBin = false){
+		let tmp = path
+		//是文件夹
+		if(fs.statSync(path).isDirectory()) return {
+			type:'folder',
+			key:tmp.split('/').pop(),
+			path: path,
+			name: '???',
+			dsc: '???',
+			state: '???'
+		}
+		let Info = fs.readFileSync(path,'utf8').match(/name: ?('|"|`).*,|dsc: ?('|"|`).*,/g) || []
+		Info = Info.map(i=>{return i.replace(/name:|dsc:| |'|"|`|,/g,'')});
+		switch(Info.length){
+			case 0:
+				Info = ['???','???'];
+				break;
+			case 1:
+				Info.push(Info[0]);
+				break;
+			case 2:
+				break;
+			default:
+				Info = Info.slice(0,2);
+		}
+		const type = path.split('.').pop()||'???'
+		const state = isBin?'已删除':`${type === 'js'?'启用':type === 'bak'?'停用':'???'}`
+		return {
+			type: type,
+			key: tmp.split('/').pop(),
+			path: path,
+			name: Info[0] || '???',
+			dsc: Info[1] || '???',
+			state: state
+		}
+	}
+
+	/**
+	 * 监听文件夹
+	 * @param file 监听目录
+	 * @param isBin 是否是回收站  
+	 */
+	async watch(file,isBin = false) {
 		//转换文件路径
 		const _file = file.replace(/\//g,"\\")
 		const watcher = chokidar.watch(file,{
@@ -113,15 +167,40 @@ class search {
 			persistent:true,
 			cwd: '.',
 		});
-		watcher.on("add", (path) => {
+		watcher.on("add", async (path) => {
 			let tmp = Plugins.get(file)||[]
-			tmp.push(path.replace(_file,""))
+			tmp.push(await this.parse(path.replace(/\\/g,'/'),isBin))
+			//重新排序
+			tmp = lodash.orderBy(tmp,'key','asc')
 			Plugins.set(file,tmp)
-		}).on("unlink",(path)=>{
+		}).on("addDir", async (path) => {
 			let tmp = Plugins.get(file)||[]
-			let id = tmp.indexOf(path.replace(_file,""));
-			tmp.splice(id,1);
+			tmp.push(await this.parse(path.replace(/\\/g,'/'),isBin))
+			//重新排序
+			tmp = lodash.orderBy(tmp,'key','asc')
 			Plugins.set(file,tmp)
+		}).on("unlink", async (path)=>{
+			let tmp = Plugins.get(file)||[]
+			let id = null;
+			tmp.forEach((item,i) => {
+				if(item.key === path.replace(_file,"")){
+					id = i
+				}
+			});
+			tmp.splice(id,id === null?0:1);
+			Plugins.set(file,tmp)
+		}).on("unlinkDir", async (path)=>{
+			let tmp = Plugins.get(file)||[]
+			let id = null;
+			tmp.forEach((item,i) => {
+				if(item.key === path.replace(_file,"")){
+					id = i
+				}
+			});
+			tmp.splice(id,id === null?0:1);
+			Plugins.set(file,tmp)
+		}).on("error", (error)=>{
+			logger.error(`[插件管理器]监听插件错误:\n${error}`)
 		})
 	}
 }

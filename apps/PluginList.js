@@ -41,12 +41,12 @@ export class PluginList extends plugin {
 			const files = (await search.read()).get(group);
 			let msg1 = [],msg2 = [],msg3 = [];
 			files.forEach(file=>{
-				if(file.endsWith(".js")){
-					msg1.push(file.replace(/.js/g, ""))
-				}else if(file.endsWith(".js.bak")){
-					msg2.push(file.replace(/.js.bak/g, ""))
+				if(file.state == '启用'){
+					msg1.push(file.key.replace(/.js/g, ""))
+				}else if(file.state == '停用'){
+					msg2.push(file.key.replace(/.js.bak/g, ""))
 				}else{
-					msg3.push(file)
+					msg3.push(file.key)
 				}
 			})
 			msg1 = msg1.join("\n")
@@ -76,7 +76,7 @@ export class PluginList extends plugin {
 		const files = (await search.read()).get(this.Plugins.bin);
 		let msg = []
 		files.map(file => {
-			msg.push(file.replace(/.js.bak|\[.*?\]/g, ""))
+			msg.push(file.key.replace(/.js.bak|\[.*?\]/g, ""))
 		});
 		msg = msg.join("\n")
 		e.reply(`回收站的插件：\n\n${msg}\n恢复请用：#恢复插件+名字`);

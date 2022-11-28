@@ -68,7 +68,7 @@ class ConfigSet {
      * @param name 名称
      * @param type 默认跑配置-defSet，用户配置-config
      */
-     getYaml(app, name, type = "defSet") {
+    getYaml(app, name, type = "defSet") {
         let key = `${app}.${name}`;
 
         if (this[type][key]) return this[type][key];
@@ -95,9 +95,6 @@ class ConfigSet {
             delete this[type][key];
             delete this.file[type][key];
             logger.mark(`[修改配置文件][${type}][${app}][${name}]`);
-            if (this[`change_${app}${name}`]) {
-                this[`change_${app}${name}`]();
-            }
         });
 
         this.watcher[type][key] = watcher;
