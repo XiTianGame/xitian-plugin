@@ -1,6 +1,6 @@
 @font-face {
-  font-family: "tttgbnumber";
-  src: url("../../../../../resources/font/tttgbnumber.ttf");
+  font-family: "genshin";
+  src: url("../../font/genshin.ttf");
   font-weight: normal;
   font-style: normal;
 }
@@ -13,10 +13,10 @@
 }
 body {
   font-size: 16px;
-  font-family: "tttgbnumber";
+  font-family: "genshin";
   transform: scale(1.5);
   transform-origin: 0 0;
-  color: white;
+  color: black;
 }
 .container {
   width: 536px;
@@ -28,17 +28,18 @@ body {
   background: transparent;
   margin: 5px 10px 8px 10px;
   position: relative;
-  box-shadow: 0 0 1px 0 #ccc, 2px 2px 4px 0 rgba(50, 50, 50, 0.8);
+  box-shadow: 0 0 1px 0 #ccc, 2px 2px 4px 0 rgba(255, 255, 255, 0.8);
   overflow: hidden;
-  color: #fff;
+  color: rgb(0, 80, 255);
+  font-family: 'genshin';
   font-size: 16px;
   border-radius: 4px;
 }
 .version-card .title {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.4);
   box-shadow: 0 0 1px 0 #fff;
-  color: white;
-  font-family: Number, YS;
+  color: rgb(255, 0, 120);
+  font-family: 'genshin';
   padding: 10px 20px;
   text-align: left;
   font-size: 16px;
@@ -48,9 +49,9 @@ body {
 .version-card .content {
   padding: 10px 15px;
   font-size: 12px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.6);
   box-shadow: 0 0 1px 0 #fff;
-  font-family: "HYWenHei-55W";
+  font-family: "genshin";
   font-weight: normal;
 }
 .version-card ul {
@@ -61,7 +62,7 @@ body {
   margin: 3px 0;
 }
 .version-card .cmd {
-  color: #d3bc8e;
+  color: #ffcf6e;
   display: inline-block;
   border-radius: 3px;
   padding: 0 3px;
@@ -77,6 +78,6 @@ body {
 .logo{
   text-align: center;
   font-size: 14px;
-  color: rgb(0, 0, 0);
-  font-family: 'tttgbnumber';
+  color: rgb(0, 125, 255);
+  font-family: 'genshin';
 }
