@@ -5,11 +5,12 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="{{pluResPath}}html/help/help.css"
+      href="{{pluResPath}}html/list/list.css"
     />
     <link rel="preload" href="{{resPath}}font/tttgbnumber.ttf" as="font" />
     <link rel="preload" href="{{pluResPath}}font/genshin.ttf" as="font">
-    <link rel="preload" href="{{pluResPath}}img/bg.jpg" as="image" />
+    <link rel="preload" href="{{pluResPath}}img/list/head.jpg" as="image" />
+    <link rel="preload" href="{{pluResPath}}img/list/body.jpg" as="image" />
     <link rel="shortcut icon" href="#" />
   </head>
   {{@headStyle}}
@@ -18,20 +19,20 @@
     <div class="container" id="container">
       <div class="head_box">
         <div class="id_text">Xitian-Plugin</div>
-        <h2 class="day_text">使用说明-v{{version}}</h2>
+        <h2 class="day_text">插件列表</h2>
       </div>
-      {{each helpData val}}
+      {{each listData val}}
       <div class="data_box">
         <div class="tab_lable">
-          {{val.group}}{{val.disable ? ' - 已禁用' : ''}}
+          {{val.group.replace(/plugins|\//g,'')}}
         </div>
         <div class="list">
           {{each val.list item}}
           <div class="item">
-            <img class="icon" src="{{pluResPath}}img/icon/{{item.icon}}.png" />
+            <img class="icon" src="{{pluResPath}}img/suffix/{{item.type}}.png" />
             <div class="title">
-              <div class="text">{{@item.title}}</div>
-              <div class="dec">{{item.desc}}</div>
+              <div class="text">[{{@item.state}}]{{item.key}}</div>
+              <div class="dec">{{item.dsc.length>15?item.dsc.slice(0,14)+'...':item.dsc}}</div>
             </div>
           </div>
           {{/each}}

@@ -1,0 +1,125 @@
+@font-face {
+  font-family: "tttgbnumber";
+  src: url("../../../../../resources/font/tttgbnumber.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "genshin";
+  src: url("../../font/genshin.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+body {
+  font-family: sans-serif;
+  font-size: 16px;
+  width: 788px;
+  background-image: url(../../img/list/body.jpg);
+  transform: scale(1.5);
+  transform-origin: 0 0;
+}
+.container {
+  width: 788px;
+  padding: 20px 15px 10px 15px;
+  background: url(../../img/list/head.jpg) top left no-repeat;
+  background-size: 100%;
+}
+.head_box {
+  border-radius: 15px;
+  font-family: 'tttgbnumber';
+  padding: 10px 20px;
+  position: relative;
+  color: rgb(0, 240, 255);;/*大标题颜色*/
+  box-shadow: 0 5px 10px 0 rgba(0, 150, 255, 0.5);
+}
+.head_box .id_text {
+  font-size: 35px;
+  text-shadow: 2px 2px 5px rgb(0, 0, 255)
+}
+.head_box .day_text {
+  font-size: 20px;
+  text-shadow: 1px 1px 3px rgb(0, 0, 255)
+}
+.head_box .genshin_logo {
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  width: 97px;
+}
+
+
+.data_box {
+  border-radius: 15px;
+  font-family: 'genshin';
+  margin-top: 20px;
+  margin-bottom: 15px;
+  padding: 20px 0px 5px 0px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 1px 0 rgb(36, 36, 36), 2px 2px 4px 0 rgba(180, 180, 180, 0.8);
+  position: relative;
+}
+.tab_lable {
+  position: absolute;
+  top: -10px;
+  left: -8px;
+  background-color: rgb(0, 85, 255);
+  box-shadow: 0 0 1px 0 rgb(0, 0, 0), 2px 2px 4px 0 rgba(0, 166, 255, 0.8);
+  color: rgb(255, 255, 255);
+  font-family: 'genshin';
+  font-size: 14px;
+  padding: 3px 10px;
+  border-radius: 15px 0px 15px 15px;
+  z-index: 20;
+}
+
+.list{
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.list .item {
+  width: 235px;
+  display: flex;
+  align-items: center;
+  color: rgb(0, 80, 255);
+  background: transparent;
+  box-shadow: 0 0 1px 0 rgb(0, 0, 0), 2px 2px 4px 0 rgba(0, 120, 255, 0.8);
+  padding: 8px 6px 8px 6px;
+  border-radius: 8px;
+  margin: 0 0px 10px 10px;
+}
+.list .item .icon{
+  width: 30px;
+  height: 30px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  position: relative;
+  flex-shrink: 0;
+}
+.list .item .title{
+  font-size: 16px;
+  margin-left: 6px;
+  line-height: 20px;
+}
+.list .item .title .text{
+  font-family: 'genshin';
+  white-space: nowrap;
+}
+.list .item .title .dec{
+  font-size: 12px;
+  color: rgb(255, 0, 120);
+  margin-top: 2px;
+}
+.logo{
+  text-align: center;
+  font-size: 14px;
+  color: rgb(0, 125, 255);
+  font-family: 'genshin';
+}

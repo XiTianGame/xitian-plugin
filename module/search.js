@@ -1,9 +1,10 @@
 import fs from 'fs';
 import chokidar from "chokidar";
 import lodash from "lodash"
+import paths from "path"
 import ConfigSet from "../module/ConfigSet.js";
 
-const _path = process.cwd().replace(/\\/g,'/')
+const YZpath = process.cwd().replace(/\\/g,'/')
 
 const Plugins = new Map()
 
@@ -21,51 +22,38 @@ class search {
 	 */
 	async find(name, mode = 0) {
 
-		let pluginPath = [], pluginState = [], pluginname = []
-		let number = 0
+		const result = [];
 		//读取插件列表
 		await this.read();
 		//历遍文件查找关键字
 		for (let group of this.plugins.group)
 		    Plugins.get(group).forEach((file) => {
 				if (mode == 0) {
-					if (file.key.includes(name)) {
-						pluginPath.push(group)
-						pluginname.push(file.key)
-						pluginState.push(file.state)
-						number++
+					if (file.file.includes(name)) {
+						result.push(file)
 					}
 				} else {
-					let tmp = file.key.split(".");
+					let tmp = file.file.split(".");
 					if (tmp[0] == name) {
-						pluginPath.push(group)
-						pluginname.push(file.key)
-						pluginState.push(file.state)
-						number++
+						result.push(file)
 					}
 				}
 			});
 		//然后再看看辣姬箱
 		Plugins.get(this.plugins.bin).forEach((file) => {
 			if (mode == 0) {
-				if (file.key.includes(name)) {
-					pluginPath.push(this.plugins.bin)
-					pluginname.push(file.key)
-					pluginState.push(file.state)
-					number++
+				if (file.file.includes(name)) {
+					result.push(file)
 				}
 			} else {
-				let tmp = file.key.split(".");
+				let tmp = file.file.split(".");
 				if (tmp[0].replace(/\[.*?\]/g, "") == name) {
-					pluginPath.push(this.plugins.bin)
-					pluginname.push(file.key)
-					pluginState.push(file.state)
-					number++
+					result.push(file)
 				}
 			}
 		});
 		//返回插件路径，状态，名称，匹配个数
-		return { pluginPath, pluginState, pluginname, number };
+		return result;
 	}
 
 	/**
@@ -117,15 +105,19 @@ class search {
 	 * @param isBin 是否是回收站
 	 */
 	async parse(path,isBin = false){
-		let tmp = path
+		let tmp = path.split('/')
+		const file = tmp.pop()
 		//是文件夹
 		if(fs.statSync(path).isDirectory()) return {
 			type:'folder',
-			key:tmp.split('/').pop(),
-			path: path,
+			file: file,
+			key: file.split('.')[0],
+			path: path.replace(file,''),
+			Abpath: paths.join(YZpath,path),
 			name: '???',
 			dsc: '???',
-			state: '???'
+			state: '???',
+			origin: tmp.pop()
 		}
 		let Info = fs.readFileSync(path,'utf8').match(/name: ?('|"|`).*,|dsc: ?('|"|`).*,/g) || []
 		Info = Info.map(i=>{return i.replace(/name:|dsc:| |'|"|`|,/g,'')});
@@ -143,13 +135,17 @@ class search {
 		}
 		const type = path.split('.').pop()||'???'
 		const state = isBin?'已删除':`${type === 'js'?'启用':type === 'bak'?'停用':'???'}`
+		const origin = (file.match(/\[.*?\]/)||[tmp.pop()])[0].replace(/\[|\]/g,'')
 		return {
 			type: type,
-			key: tmp.split('/').pop(),
-			path: path,
+			file: file,
+			key: file.split('.')[0],
+			path: path.replace(file,''),
+			Abpath: paths.join(YZpath,path),
 			name: Info[0] || '???',
 			dsc: Info[1] || '???',
-			state: state
+			state: state,
+			origin: origin
 		}
 	}
 

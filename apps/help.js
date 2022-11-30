@@ -31,6 +31,7 @@ export class help extends plugin {
 			return true;
 		}
 		let data = await Help.get(this.e);
+
 		if (!data) return;
 		let img = await this.cache(data);
 		await this.reply(img);

@@ -2,6 +2,7 @@ import cfg from '../../../lib/config/config.js'
 import common from "../../../lib/common/common.js"
 import commons from '../module/common.js'
 import { Restart } from "../../other/restart.js"
+import moment from 'moment'
 import path from 'path'
 import search from './search.js'
 import ConfigSet from "./ConfigSet.js"
@@ -32,22 +33,22 @@ class install {
 	 */
 	async choose(textPath, sameplugin) {
 		let filePath
-		switch (sameplugin.number) {
+		switch (sameplugin.length) {
 			case 0:
 				filePath = textPath;
 				break;
 			case 1:
-				if (sameplugin.pluginState[0] !== "已删除") {
-					filePath = sameplugin.pluginPath[0];
+				if (sameplugin[0].state !== "已删除") {
+					filePath = sameplugin[0].path;
 				} else {
 					filePath = textPath;
 				}
 				break;
 			default:
 				let count = 0;
-				while (count < sameplugin.number) {
-					if (sameplugin.pluginState[count] !== "已删除") {
-						filePath = sameplugin.pluginPath[count];
+				while (count < sameplugin.length) {
+					if (sameplugin[count].state !== "已删除") {
+						filePath = sameplugin[count].path;
 						break;
 					}
 					count++;
@@ -76,7 +77,7 @@ class install {
 			const response = await fetch(fileUrl);
 			const streamPipeline = promisify(pipeline);
 			//根据不同匹配数来运行不同安装操作
-			switch (sameplugin.number) {
+			switch (sameplugin.length) {
 				case 0:
 					await streamPipeline(response.body, fs.createWriteStream(path.join(filePath, `${filename}.bak`)));
 					//核验插件
@@ -85,14 +86,14 @@ class install {
 					}
 					break;
 				case 1:
-					Bot.pickFriend(id).sendMsg(`检测到相似插件:${sameplugin.pluginname[0].replace(/.js|.bak/g, "")}，正在执行覆盖安装`);
+					Bot.pickFriend(id).sendMsg(`检测到相似插件:${sameplugin[0].file.replace(/.js|.bak/g, "")}，正在执行覆盖安装`);
 					//根据插件不同的状态分类处理
-					switch (sameplugin.pluginState[0]) {
+					switch (sameplugin[0].state) {
 						case '启用':
-							fs.renameSync(`${sameplugin.pluginPath[0]}${sameplugin.pluginname[0]}`, `${this.plugins.bin}${sameplugin.pluginname[0]}.bak`)
+							fs.renameSync(`${sameplugin[0].path}${sameplugin[0].file}`, `${this.plugins.bin}${sameplugin[0].file}.bak`)
 							break;
 						case '停用':
-							fs.renameSync(`${sameplugin.pluginPath[0]}${sameplugin.pluginname[0]}`, `${this.plugins.bin}${sameplugin.pluginname[0]}`)
+							fs.renameSync(`${sameplugin[0].path}${sameplugin[0].file}`, `${this.plugins.bin}${sameplugin[0].file}`)
 							break;
 						default://回收站的不做处理
 					}
@@ -106,16 +107,16 @@ class install {
 				default:
 					Bot.pickFriend(id).sendMsg("检测到多个相似插件，正在进行处理...");
 					let num;//由于搜索逻辑，这里要从后往前排
-					for (num = sameplugin.number - 1; num >= 0; num--) {
-						switch (sameplugin.pluginState[num]) {
+					for (num = sameplugin.length - 1; num >= 0; num--) {
+						switch (sameplugin[num].state) {
 							case '启用':
-								fs.renameSync(`${sameplugin.pluginPath[num]}${sameplugin.pluginname[num]}`, `${this.plugins.bin}${sameplugin.pluginname[num]}.bak`)
+								fs.renameSync(`${sameplugin[num].path}${sameplugin[num].file}`, `${this.plugins.bin}${sameplugin[num].file}.bak`)
 								break;
 							case '停用':
-								fs.renameSync(`${sameplugin.pluginPath[num]}${sameplugin.pluginname[num]}`, `${this.plugins.bin}${sameplugin.pluginname[num]}`)
+								fs.renameSync(`${sameplugin[num].path}${sameplugin[num].file}`, `${this.plugins.bin}${sameplugin[num].file}`)
 								break;
 							default://回收站的会直接删除
-								fs.unlink(`${this.plugins.bin}${sameplugin.pluginname[num]}`, () => { })
+								fs.unlink(`${this.plugins.bin}${sameplugin[num].file}`, () => { })
 						}
 					}
 					await streamPipeline(response.body, fs.createWriteStream(path.join(filePath, `${filename}.bak`)));
@@ -127,12 +128,13 @@ class install {
 			}
 		} else {
 			//没开启智能安装直接无脑覆盖
+			filename = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss') + '.js'
 			//下载output_log.txt文件
 			const response = await fetch(fileUrl);
 			const streamPipeline = promisify(pipeline);
 			await streamPipeline(response.body, fs.createWriteStream(path.join(textPath, `${filename}.bak`)));
 			//核验插件
-			if (await this.check(path.join(filePath, `${filename}.bak`), id)) {
+			if (await this.check(path.join(textPath, `${filename}.bak`), id)) {
 				Bot.pickFriend(id).sendMsg("此插件已安装，重启后生效~");
 			}
 		}

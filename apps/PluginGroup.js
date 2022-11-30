@@ -115,23 +115,23 @@ export class PluginGroup extends plugin {
         })
         let tmp = await search.find(keyword[0], 0);
         let path
-        if (tmp.number == 0) {
+        if (tmp.length == 0) {
             e.reply("没有找到该插件哦");
             return true;
-        } else if (tmp.number == 1) {
-            path = `${tmp.pluginPath}${tmp.pluginname}`
+        } else if (tmp.length == 1) {
+            path = tmp[0].path + tmp[0].file
             if (!fs.existsSync(path)) {
                 e.reply("设置分组失败了呢~" + `\n有没有可能你没有安装“${msg}”插件`);
                 return true;
             }
             if (all_group.indexOf(keyword[1]) > -1) {
-                fs.renameSync(`${tmp.pluginPath}${tmp.pluginname}`, `plugins/${keyword[1]}/${tmp.pluginname}`)
+                fs.renameSync(path, `plugins/${keyword[1]}/${tmp[0].file}`)
                 e.reply(`成功设置插件“${keyword[0]}”为分组${keyword[1]}~`);
             } else {
                 e.reply("没有这个分组呢");
                 return true;
             }
-        } else if (tmp.number > 1) {
+        } else if (tmp.length > 1) {
             e.reply("找到多个插件，请指定准确的插件名哦");
         }
         return true;
