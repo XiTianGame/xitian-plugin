@@ -44,17 +44,4 @@ for (let i in files) {
   apps[name] = ret[i].value[Object.keys(ret[i].value)[0]]
 }
 
-setTimeout(async function () {
-    let msgStr = await redis.get("xitian:restart-msg");
-    let relpyPrivate = async function () { }
-    if (msgStr) {
-        let msg = JSON.parse(msgStr);
-        await relpyPrivate(msg.qq, msg.msg);
-        await redis.del("xitian:restart-msg");
-        let msgs = [`当前插件管理器版本: ${version}`,`您可使用 #插件帮助 命令查看帮助信息`];
-        await relpyPrivate(msg.qq, msgs.join("\n"));
-    }
-}, 1000);
-
-
 export { apps }
