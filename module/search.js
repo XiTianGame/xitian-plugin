@@ -179,7 +179,7 @@ class search {
 			let tmp = Plugins.get(file)||[]
 			let id = null;
 			tmp.forEach((item,i) => {
-				if(item.key === path.replace(_file,"")){
+				if(item.file === path.replace(_file,"")){
 					id = i
 				}
 			});
@@ -189,7 +189,7 @@ class search {
 			let tmp = Plugins.get(file)||[]
 			let id = null;
 			tmp.forEach((item,i) => {
-				if(item.key === path.replace(_file,"")){
+				if(item.file === path.replace(_file,"")){
 					id = i
 				}
 			});
