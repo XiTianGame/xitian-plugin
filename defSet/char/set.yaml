@@ -2,3 +2,5 @@ V2:
   - 'export async'
   - 'export function'
   - 'export const rule'
+  - 'BotConfig'
+  - 'YunzaiApps'
