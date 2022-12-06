@@ -62,9 +62,9 @@ export class update extends plugin {
     }
 
     /**
-   * rule - 插件版本信息
-   * 来自闲心，先撂这里
-   */
+     * rule - 插件版本信息
+     * 来自闲心，先撂这里
+     */
     async version() {
         const data = await new Version(this.e).getData(
             this.versionData.slice(0, 3)
@@ -74,9 +74,9 @@ export class update extends plugin {
     }
 
     /**
-   * 检查git是否安装
-   * @returns
-   */
+     * 检查git是否安装
+     * @returns
+    */
     async checkGit() {
         let ret = await execSync('git --version', { encoding: 'utf-8' })
         if (!ret || !ret.includes('git version')) {
@@ -311,8 +311,8 @@ export class update extends plugin {
     }
 
     /*
-    *更新日志的方法
-    */
+     *更新日志的方法
+     */
     async updateLog() {
         let log = await this.getLog()
         await this.reply(log)

@@ -198,8 +198,12 @@ class install {
 
 		/**执行安装命令 */
 		let command = `cd ${_path}/plugins && git clone ${url}`;
-		await this.execSync(command);
-
+		let result = await this.execSync(command);
+		
+		if(result.error) {
+			await e.reply(`安装${name}失败,错误信息:\n${result.error}`);
+			return true;
+		}
 		/**重启云崽 */
 		await e.reply("安装成功!即将进行重启...");
 		this.restart(e);

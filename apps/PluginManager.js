@@ -84,8 +84,8 @@ export class PluginManager extends plugin {
 			for (let item of plugininfo) {
 				let info = [
 					`找到插件：${item.file.replace(/.js|.bak|\[.*?\]/g, "")}\n`,
-				    `位于分组：${item.path.replace(/plugins|\//g, "")}\n`,
-				    `当前状态：${item.state}`
+					`位于分组：${item.path.replace(/plugins|\//g, "")}\n`,
+					`当前状态：${item.state}`
 				]
 				msg.push({
 					message: info,
@@ -126,7 +126,7 @@ export class PluginManager extends plugin {
 				e.reply(`已停用：${msg}` + "\n重启后生效呢~")
 			} else if (tmp[0].state == "停用") {
 				e.reply("该插件已经处于停用状态哦");
-			} else if (tmp[0].state == "已删除"){
+			} else if (tmp[0].state == "已删除") {
 				e.reply("该插件处于已删除状态\n请先恢复插件哦");
 			} else {
 				e.reply("该插件状态异常,请确认你指定了有效的插件");
@@ -159,7 +159,7 @@ export class PluginManager extends plugin {
 				}
 				fs.renameSync(`${tmp[0].path}${tmp[0].file}`, `${tmp[0].path}${msg}.js`)
 				e.reply(`已启用：${msg}` + "\n重启后生效呢~")
-			} else if (tmp[0].state == "已删除"){
+			} else if (tmp[0].state == "已删除") {
 				e.reply("该插件处于已删除状态\n请先恢复插件哦");
 			} else {
 				e.reply("该插件状态异常,请确认你指定了有效的插件");
@@ -201,7 +201,7 @@ export class PluginManager extends plugin {
 				path = `${tmp[0].path}${msg}.js`
 			} else if (tmp[0].state == "停用") {
 				path = `${tmp[0].path}${msg}.js.bak`
-			} else if (tmp[0].state == "已删除"){
+			} else if (tmp[0].state == "已删除") {
 				e.reply("该插件已经是删除状态哦");
 				return true;
 			} else {
@@ -240,7 +240,7 @@ export class PluginManager extends plugin {
 			} else {
 				let origin = tmp[0].file.replace(/.js|.bak|\[/g, "").split("]");
 				let path
-				if (origin.length>1) {
+				if (origin.length > 1) {
 					path = `${plugins.bin}[${origin[0]}]${msg}.js.bak`
 					if (!fs.existsSync(path)) {
 						e.reply("恢复失败了呢~" + `\n有没有可能你没有“${msg}”插件`)

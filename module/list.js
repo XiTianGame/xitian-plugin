@@ -4,13 +4,13 @@ import base from "./base.js"
 
 
 
-export default class list extends base{
+export default class list extends base {
     constructor(e) {
         super(e);
         this.model = "list";
     }
 
-    async getData(){
+    async getData() {
         let Data = await this.dealData();
         return {
             ...this.screenData,
@@ -20,7 +20,7 @@ export default class list extends base{
         }
     }
 
-    async dealData(type = 'group'){
+    async dealData(type = 'group') {
         let Plugin = await search.read();
         let groups = ConfigSet.getConfig('group', 'set')[type];
         let data = [];

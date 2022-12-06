@@ -49,11 +49,11 @@ class ConfigSet {
      * @param name 名称
      * @param type 默认跑配置-defSet，用户配置-config
      */
-    getFile(app, name, type = "defSet"){
+    getFile(app, name, type = "defSet") {
         let file = this.getFilePath(app, name, type);
         let key = `${app}.${name}`;
 
-        if(this.file[type][key]) return this.file[type][key];
+        if (this.file[type][key]) return this.file[type][key];
 
         this.file[type][key] = fs.readFileSync(file, "utf8");
 
@@ -117,28 +117,28 @@ class ConfigSet {
             data = YAML.stringify(data);
             //插入注释
             data = this.Insert(notes, data);
-            
+
             fs.writeFileSync(file, data, "utf8");
         }
     }
 
     /**获取yaml注释 */
-    getNote(file){
+    getNote(file) {
         let annotate = {}
         file = file.split('\n')
         let tmp = [];
-        for(let v of file){
-            if(v.startsWith('#')){
+        for (let v of file) {
+            if (v.startsWith('#')) {
                 tmp.push(v);
-            }else{
+            } else {
                 v = v.split(":");
-                if(v.length<2){
+                if (v.length < 2) {
                     continue;
                 }
                 annotate[v[0]] = tmp;
                 tmp = [];
             }
-        }   
+        }
         return annotate;
     }
 
@@ -147,12 +147,12 @@ class ConfigSet {
      * @param notes 注释本体
      * @param data 数据
      */
-    Insert(notes, data){
+    Insert(notes, data) {
         data = data.split('\n')
-        for(let key of Object.keys(notes)){
-            for(let i = 0;i<data.length;i++){
-                if(data[i].startsWith(`${key}:`)){
-                    data.splice(i,0,notes[key].join(""))
+        for (let key of Object.keys(notes)) {
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].startsWith(`${key}:`)) {
+                    data.splice(i, 0, notes[key].join(""))
                     i++
                 }
             };
