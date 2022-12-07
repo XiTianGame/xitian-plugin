@@ -240,9 +240,9 @@ class install {
 	}
 
 	/**
-   * 检查git是否安装
-   * @returns
-   */
+     * 检查git是否安装
+     * @returns
+     */
 	async checkGit(e) {
 		let ret = await execSync('git --version', { encoding: 'utf-8' })
 		if (!ret || !ret.includes('git version')) {
