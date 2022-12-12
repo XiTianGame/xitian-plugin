@@ -17,11 +17,8 @@ class common {
             return false;
         }
         //获取授权QQ列表，没有就默认全部主人
-        let list = [];
         if (this.permis.grade.length == 0 && this.permis.accredit.length == 0) {
-            list = cfg.masterQQ;
-        } else if (this.permis.accredit.length == 0) {
-            list = this.permis.accredit.length;
+            this.permis.grade.push("master")
         }
         //判断权限
         if ((this.permis.grade.indexOf("master") > -1 && e.isMaster)
