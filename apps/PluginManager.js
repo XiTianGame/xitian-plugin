@@ -302,7 +302,7 @@ export class PluginManager extends plugin {
 
 		let key = e.msg.replace("#查看插件", "");
 		let tmp = await search.find(key, 1);
-		switch (tmp.number) {
+		switch (tmp.length) {
 			case 0:
 				e.reply("未找到该插件")
 				break;
