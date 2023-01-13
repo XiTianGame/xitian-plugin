@@ -21,7 +21,7 @@ for (let item of plugins.group) {
 	}
 }
 
-export class PluginManager extends plugin {
+export class Manager extends plugin {
 	constructor() {
 		super({
 			name: '插件管理',
@@ -180,13 +180,9 @@ export class PluginManager extends plugin {
 
 		//彻底删除，直接删除该文件
 		if (msg.startsWith("彻底")) {
-			msg = msg.replace("彻底删除插件", "")
-			let tmp = await search.find(msg, 1);
-			if (fs.existsSync(`${tmp[0].path}${tmp[0].file}`)) {
-				fs.unlink(`${tmp[0].path}${tmp[0].file}`, () => { });
-				e.reply(`插件“${msg}”已经彻底删除，再也找不回来了哦~`)
-				return true
-			}
+			this.setContext("fullDel",e.isGroup,60);
+			await e.reply("(是|否)确认删除该插件？彻底删除后再也找不回来了哦");
+			return true
 		} else {
 			msg = msg.replace("删除插件", "")
 		}
@@ -215,6 +211,38 @@ export class PluginManager extends plugin {
 			} else e.reply("删除失败了呢~" + `\n有没有可能你没有安装“${msg}”插件`)
 		} else if (tmp.length > 1) {
 			e.reply("找到多个插件，请指定准确的插件名哦");
+		}
+		return true;
+	}
+
+	async fullDel(e) {
+		if(!this.e.msg) return true;
+		switch(this.e.msg){
+			case "是":
+				this.finish("fullDel",this.e.isGroup)
+				let msg = e.msg.replace("#彻底删除插件", "")
+				let tmp = await search.find(msg, 1);
+				switch(tmp.length){
+					case 0:
+						e.reply("没有找到该插件哦");
+						break;
+					case 1:
+						if (fs.existsSync(`${tmp[0].path}${tmp[0].file}`)) {
+			                fs.unlinkSync(`${tmp[0].path}${tmp[0].file}`);
+			                this.e.reply(`插件“${msg}”已经彻底删除，再也找不回来了哦~`)
+			                return true
+		                }
+						break;
+					default:
+						e.reply("找到多个插件，请指定准确的插件名哦");
+				}
+				break;
+			case "否":
+				this.finish("fullDel",this.e.isGroup)
+				this.e.reply("删除已取消")
+				break;
+			default:
+				this.e.reply("请回答 是/否 来进行操作")
 		}
 		return true;
 	}

@@ -12,8 +12,8 @@ let helpData = {
 export class help extends plugin {
 	constructor() {
 		super({
-			name: '插件管理',
-			dsc: '各种功能帮助master管理js插件',
+			name: '插件帮助',
+			dsc: '发送插件管理器使用帮助',
 			/** https://oicqjs.github.io/oicq/#events */
 			event: 'message',
 			priority: 5,

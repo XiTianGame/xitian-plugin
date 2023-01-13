@@ -17,11 +17,11 @@ let default_num = plugins.group.indexOf(`plugins/${config.default_group}/`);
 let my = {};
 let confirm = {};
 
-export class PluginInstall extends plugin {
+export class Install extends plugin {
 	constructor() {
 		super({
-			name: '插件管理',
-			dsc: '各种功能帮助master管理js插件',
+			name: '插件安装',
+			dsc: '进行安装和新增插件操作',
 			/** https://oicqjs.github.io/oicq/#events */
 			event: 'message',
 			priority: 5,

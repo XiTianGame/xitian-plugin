@@ -7,7 +7,7 @@ import search from '../module/search.js'
 import common from "../module/common.js"
 
 
-export class PluginList extends plugin {
+export class List extends plugin {
 	constructor() {
 		super({
 			name: '插件列表',

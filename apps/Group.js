@@ -9,7 +9,7 @@ const _path = process.cwd();//云崽目录
 let plugins = ConfigSet.getConfig("group","set");
 let exclude = ConfigSet.getConfig("exclude","set");
 
-export class PluginGroup extends plugin {
+export class Group extends plugin {
     constructor() {
         super({
             name: '分组',
