@@ -1,13 +1,12 @@
 import fs from 'node:fs'
-import schedule from "node-schedule";
 import ConfigSet from "./module/ConfigSet.js";
 
 let versionData = ConfigSet.getdefSet("version", "set");
 
 const version = (versionData && versionData.length && versionData[0].version) || "1.0.0";
 
-Bot.logger.info(`-----------＾ω＾----------`)
-Bot.logger.info(`插件管理器${version}初始化~`)
+logger.info(`-----------＾ω＾----------`)
+logger.info(`插件管理器${version}初始化~`)
 
 /**
 * 初始化配置文件
@@ -45,3 +44,28 @@ for (let i in files) {
 }
 
 export { apps }
+/*
+ *                        _oo0oo_
+ *                       o8888888o
+ *                       88" . "88
+ *                       (| -_- |)
+ *                       0\  =  /0
+ *                     ___/`---'\___
+ *                   .' \\|     |// '.
+ *                  / \\|||  :  |||// \
+ *                 / _||||| -:- |||||- \
+ *                |   | \\\  - /// |   |
+ *                | \_|  ''\---/''  |_/ |
+ *                \  .-\__  '-'  ___/-. /
+ *              ___'. .'  /--.--\  `. .'___
+ *           ."" '<  `.___\_<|>_/___.' >' "".
+ *          | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+ *          \  \ `_.   \_ __\ /__ _/   .-` /  /
+ *      =====`-.____`.___ \_____/___.-`___.-'=====
+ *                        `=---='
+ * 
+ * 
+ *      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * 
+ *            佛祖保佑                 永无BUG
+ */

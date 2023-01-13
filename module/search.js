@@ -21,7 +21,7 @@ class search {
 	 * @param mode 0模糊查找 1精确查找
 	 */
 	async find(name, mode = 0) {
-
+		if(!name || /^.?(js|bak)$/.test(name)) return [];
 		const result = [];
 		//读取插件列表
 		await this.read();
