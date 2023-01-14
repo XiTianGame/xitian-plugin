@@ -3,21 +3,21 @@ import cfg from '../../../lib/config/config.js'
 import ConfigSet from "../module/ConfigSet.js";
 import uninstall from '../module/uninstall.js';
 import search from "../module/search.js";
-import common from "../module/common.js"
+import common from "../module/common.js";
+import PATH from "path";
 import fs from 'fs';
 
 let config = ConfigSet.getConfig("js","set");
 let plugins = ConfigSet.getConfig("group","set");
 
-let default_num = plugins.group.indexOf(`plugins/${config.default_group}/`);
-
 //不存在目录则创建目录
 if (!fs.existsSync(plugins.bin)) {
 	fs.mkdirSync(plugins.bin);
 }
-for (let item of plugins.group) {
-	if (!fs.existsSync(item)) {
-		fs.mkdirSync(item);
+for (let name of plugins.group) {
+	name = PATH.join('./plugins',name)
+	if (!fs.existsSync(name)) {
+		fs.mkdirSync(name);
 	}
 }
 
@@ -205,7 +205,7 @@ export class Manager extends plugin {
 				return true;
 			}
 			if (fs.existsSync(path)) {
-				fs.renameSync(`${tmp[0].path}${tmp[0].file}`, `${plugins.bin}[${tmp[0].origin}]${msg}.js.bak`)
+				fs.renameSync(`${tmp[0].path}${tmp[0].file}`, PATH.join(plugins.bin, `[${tmp[0].origin}]${msg}.js.bak`))
 				e.reply(`已删除：${msg}` + "\n重启后生效呢~")
 				return true;
 			} else e.reply("删除失败了呢~" + `\n有没有可能你没有安装“${msg}”插件`)
@@ -269,7 +269,7 @@ export class Manager extends plugin {
 				let origin = tmp[0].file.replace(/.js|.bak|\[/g, "").split("]");
 				let path
 				if (origin.length > 1) {
-					path = `${plugins.bin}[${origin[0]}]${msg}.js.bak`
+					path = PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`)
 					if (!fs.existsSync(path)) {
 						e.reply("恢复失败了呢~" + `\n有没有可能你没有“${msg}”插件`)
 						return true;
@@ -277,17 +277,17 @@ export class Manager extends plugin {
 					//先确定有没有这个分组
 					if (!fs.existsSync(`plugins/${origin[0]}`)) {
 						e.reply(`有没有可能你没有${origin[0]}分组\n即将恢复至默认分组`)
-						fs.renameSync(`${plugins.bin}[${origin[0]}]${msg}.js.bak`, `plugins/${plugins.group[default_num]}/${msg}.js`)
+						fs.renameSync(PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`), `plugins/${config.default_group}/${msg}.js`)
 					} else {
-						fs.renameSync(`${plugins.bin}[${origin[0]}]${msg}.js.bak`, `plugins/${origin[0]}/${msg}.js`)
+						fs.renameSync(PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`), `plugins/${origin[0]}/${msg}.js`)
 					}
 				} else {
-					path = `${plugins.bin}${msg}.js.bak`
+					path = PATH.join(plugins.bin, `${msg}.js.bak`)
 					if (!fs.existsSync(path)) {
 						e.reply("恢复失败了呢~" + `\n有没有可能你没有“${msg}”插件`)
 						return true;
 					}
-					fs.renameSync(`${plugins.bin}${msg}.js.bak`, `${plugins.group[default_num]}${msg}.js`)
+					fs.renameSync(PATH.join(plugins.bin, `${msg}.js.bak`), `plugins/${config.default_group}/${msg}.js`)
 				}
 				e.reply(`已恢复：${msg}` + "\n重启后生效呢~")
 			}
@@ -337,10 +337,10 @@ export class Manager extends plugin {
 			case 1:
 				if (e.isGroup) {
 					//上传到群文件
-					Bot.pickGroup(e.group_id).fs.upload(`${tmp.pluginPath}/${tmp.pluginname}`);
+					Bot.pickGroup(e.group_id).fs.upload(tmp[0].Abpath);
 				} else {
 					//发送离线文件
-					Bot.pickFriend(e.user_id).sendFile(`${tmp.pluginPath}/${tmp.pluginname}`);
+					Bot.pickFriend(e.user_id).sendFile(tmp[0].Abpath);
 				}
 				break;
 			default:

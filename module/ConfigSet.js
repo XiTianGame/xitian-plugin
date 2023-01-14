@@ -1,6 +1,7 @@
 import YAML from "yaml";
 import fs from "node:fs";
 import chokidar from "chokidar";
+import PATH from "path";
 import lodash from "lodash";
 
 /** 配置文件 直接借鉴yunzai配置代码 */
@@ -19,6 +20,14 @@ class ConfigSet {
 
         /** 监听文件 */
         this.watcher = { config: {}, defSet: {} };
+    }
+
+    /**
+     * 拼接分组路径
+     * @param name 分组名
+     */
+    group(name){
+        return PATH.join("./plugins",name,"/")
     }
 
     /**

@@ -1,10 +1,10 @@
 import fs from 'fs';
 import chokidar from "chokidar";
 import lodash from "lodash"
-import paths from "path"
+import PATH from "path"
 import ConfigSet from "../module/ConfigSet.js";
 
-const YZpath = process.cwd().replace(/\\/g,'/')
+const YZpath = process.cwd()
 
 const Plugins = new Map()
 
@@ -12,6 +12,8 @@ class search {
 	constructor() {
 		/** 读取配置 */
 		this.plugins = ConfigSet.getConfig("group", "set");
+		/** 文件夹监控 */
+		this.watcher = [];
 		this.startwatch();
 	}
 
@@ -61,16 +63,17 @@ class search {
 	 */
 	async startwatch() {
 		await this.read();
-		for (let i in this.plugins.group) {
-			if (!fs.existsSync(this.plugins.group[i])) {
-				fs.mkdirSync(this.plugins.group[i])
+		for (let group of this.plugins.group) {
+			let path = PATH.join(PATH.join('./plugins',group));
+			if (!fs.existsSync(path)) {
+				fs.mkdirSync(path)
 			}
-			this.watch(this.plugins.group[i])
+			this.watch(group, path)
 		}
 		if (!fs.existsSync(this.plugins.bin)) {
 			fs.mkdirSync(this.plugins.bin)
 		}
-		this.watch(this.plugins.bin, true)
+		this.watch(this.plugins.bin,this.plugins.bin, true)
 	}
 
 	/**
@@ -80,9 +83,9 @@ class search {
 		for (let group of this.plugins.group) {
 			if (Plugins.has(group)) continue;
 			let Infos = [];
-			for (let file of fs.readdirSync(group)) {
+			for (let file of fs.readdirSync(PATH.join('./plugins',group))) {
 				Infos.push({
-					...await this.parse(`${group}${file}`)
+					...await this.parse(PATH.join('./plugins',group,file))
 				})
 			}
 			Plugins.set(group, Infos)
@@ -105,19 +108,33 @@ class search {
 	 * @param isBin 是否是回收站
 	 */
 	async parse(path, isBin = false) {
-		let tmp = path.split('/')
-		const file = tmp.pop()
+		
+		path = PATH.join(path);
+		let tmp = PATH.parse(path)
+		const file = tmp.base;
+		//不存在该路径
+		if(!fs.existsSync(path)) return {
+			type: '???',
+			file: file,
+			key: tmp.name,
+			path: tmp.dir + '\\',
+			Abpath: PATH.join(YZpath, path),
+			name: '???',
+			dsc: '???',
+			state: '???',
+			origin: tmp.dir.split('\\').pop()
+		}
 		//是文件夹
 		if (fs.statSync(path).isDirectory()) return {
 			type: 'folder',
 			file: file,
-			key: file.split('.')[0],
-			path: path.replace(file, ''),
-			Abpath: paths.join(YZpath, path),
+			key: tmp.name,
+			path: tmp.dir + '\\',
+			Abpath: PATH.join(YZpath, path),
 			name: '???',
 			dsc: '???',
 			state: '???',
-			origin: tmp.pop()
+			origin: tmp.dir.split('\\').pop()
 		}
 		let Info = fs.readFileSync(path, 'utf8').match(/name: ?('|"|`).*,|dsc: ?('|"|`).*,/g) || []
 		Info = Info.map(i => { return i.replace(/name:|dsc:| |'|"|`|,/g, '') });
@@ -133,15 +150,15 @@ class search {
 			default:
 				Info = Info.slice(0, 2);
 		}
-		const type = path.split('.').pop() || '???'
+		const type = tmp.ext.replace(".","") || '???'
 		const state = isBin ? '已删除' : `${type === 'js' ? '启用' : type === 'bak' ? '停用' : '???'}`
-		const origin = (file.match(/\[.*?\]/) || [tmp.pop()])[0].replace(/\[|\]/g, '')
+		const origin = (file.match(/\[.*?\]/) || [tmp.dir.split('\\').pop()])[0].replace(/\[|\]/g, '')
 		return {
 			type: type,
 			file: file,
-			key: file.split('.')[0],
-			path: path.replace(file, ''),
-			Abpath: paths.join(YZpath, path),
+			key: tmp.name,
+			path: tmp.dir + '\\',
+			Abpath: PATH.join(YZpath, path),
 			name: Info[0] || '???',
 			dsc: Info[1] || '???',
 			state: state,
@@ -151,12 +168,15 @@ class search {
 
 	/**
 	 * 监听文件夹
+	 * @param key map键值
 	 * @param file 监听目录
 	 * @param isBin 是否是回收站  
 	 */
-	async watch(file, isBin = false) {
+	async watch(key, file, isBin = false) {
+		//防止重复监听
+		if(this.watcher.includes(key)) return;
+		this.watcher.push(key)
 		//转换文件路径
-		const _file = file.replace(/\//g, "\\")
 		const watcher = chokidar.watch(file, {
 			//忽略开始监控的文件添加
 			ignoreInitial: true,
@@ -164,37 +184,25 @@ class search {
 			cwd: '.',
 		});
 		watcher.on("add", async (path) => {
-			let tmp = Plugins.get(file) || []
-			tmp.push(await this.parse(path.replace(/\\/g, '/'), isBin))
+			let tmp = Plugins.get(key) || []
+			tmp.push(await this.parse(path, isBin))
 			//重新排序
 			tmp = lodash.orderBy(tmp, 'key', 'asc')
-			Plugins.set(file, tmp)
+			Plugins.set(key, tmp)
 		}).on("addDir", async (path) => {
-			let tmp = Plugins.get(file) || []
-			tmp.push(await this.parse(path.replace(/\\/g, '/'), isBin))
+			let tmp = Plugins.get(key) || []
+			tmp.push(await this.parse(path, isBin))
 			//重新排序
 			tmp = lodash.orderBy(tmp, 'key', 'asc')
-			Plugins.set(file, tmp)
+			Plugins.set(key, tmp)
 		}).on("unlink", async (path) => {
-			let tmp = Plugins.get(file) || []
-			let id = null;
-			tmp.forEach((item, i) => {
-				if (item.file === path.replace(_file, "")) {
-					id = i
-				}
-			});
-			tmp.splice(id, id === null ? 0 : 1);
-			Plugins.set(file, tmp)
+			let tmp = Plugins.get(key) || []
+			tmp = tmp.filter(item=>item.file !== path.split("\\").pop());
+			Plugins.set(key, tmp)
 		}).on("unlinkDir", async (path) => {
-			let tmp = Plugins.get(file) || []
-			let id = null;
-			tmp.forEach((item, i) => {
-				if (item.file === path.replace(_file, "")) {
-					id = i
-				}
-			});
-			tmp.splice(id, id === null ? 0 : 1);
-			Plugins.set(file, tmp)
+			let tmp = Plugins.get(key) || []
+			tmp = tmp.filter(item=>item.file !== path.split("\\").pop());
+			Plugins.set(key, tmp)
 		}).on("error", (error) => {
 			logger.error(`[插件管理器]监听插件错误:\n${error}`)
 		})

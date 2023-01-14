@@ -1,5 +1,5 @@
 #辣姬箱目录
-bin: plugins/bin/
+bin: ./plugins/bin/
 #分组列表
 group:
- - plugins/example/
+  - example

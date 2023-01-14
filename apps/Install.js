@@ -1,18 +1,14 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import cfg from '../../../lib/config/config.js'
 import ConfigSet from "../module/ConfigSet.js"
 import install from "../module/install.js"
-import uninstall from "../module/uninstall.js"
 import common from "../module/common.js"
 import { segment } from "oicq";
+import PATH from "path"
 import fs from 'fs';
-
-const _path = process.cwd();//云崽目录
 
 let config = ConfigSet.getConfig("js","set");
 let plugins = ConfigSet.getConfig("group","set");
 
-let default_num = plugins.group.indexOf(`plugins/${config.default_group}/`);
 
 let my = {};
 let confirm = {};
@@ -138,14 +134,10 @@ export class Install extends plugin {
 			if (!e.msg) return false
 			if (e.msg == "是") {
 				//清空bin内的全部文件
-				var files = fs.readdirSync(plugins.bin);
+				let files = fs.readdirSync(plugins.bin);
 				files.forEach(item => {
-					//如果是文件夹呢
-					if (fs.statSync(`${plugins.bin}${item}`).isDirectory()) {
-						uninstall.deleteFolder(`${plugins.bin}${item}`);
-					} else {
-						fs.unlink(`${plugins.bin}${item}`, () => { })
-					}
+					//rm暴力删除
+					fs.rmSync(PATH.join(plugins.bin,item),{recursive: true, force: true})
 				});
 				cancel(e);
 				e.reply("插件回收站已清空")
@@ -178,7 +170,7 @@ export class Install extends plugin {
 				return true;
 			}
 
-			let textPath = plugins.group[default_num];
+			let textPath = ConfigSet.group(config.default_group)
 			//获取下载链接
 			let fileUrl = await e.friend.getFileUrl(e.file.fid);
 			let filename = e.file.name;
@@ -213,7 +205,7 @@ export class Install extends plugin {
 				e.reply(`超过${config.timeout}秒未发送消息，批量安装已结束~`)
 			}, config.timeout * 1000);//等待js文件
 
-			let textPath = plugins.group[default_num];
+			let textPath = ConfigSet.group(config.default_group);
 			//获取下载链接
 			let fileUrl = await e.friend.getFileUrl(e.file.fid);
 			let filename = e.file.name;

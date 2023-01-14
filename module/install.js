@@ -7,15 +7,13 @@ import path from 'path'
 import search from './search.js'
 import ConfigSet from "./ConfigSet.js"
 import fetch from "node-fetch"
-import { createRequire } from 'module'
+import { exec, execSync } from 'child_process'
 import { pipeline } from "stream"
 import { promisify } from "util"
 import fs from 'fs'
 
 //云崽目录
 const _path = process.cwd();
-const require = createRequire(import.meta.url)
-const { exec, execSync } = require('child_process')
 
 class install {
 	constructor() {
@@ -23,7 +21,6 @@ class install {
 		this.config = ConfigSet.getConfig("js", "set");
 		this.plugins = ConfigSet.getConfig("group", "set");
 		this.char = ConfigSet.getdefSet("char", "set");
-		this.default_num = this.plugins.group.indexOf(`plugins/${this.config.default_group}/`);
 	}
 
 	/**
@@ -73,7 +70,7 @@ class install {
 		if (this.config.auto_install && filename) {
 			let sameplugin = await search.find((await commons.rename(filename)).replace(/.js|.bak/g, ""), 0);//提取插件关键名字
 			let filePath = await this.choose(textPath, sameplugin);
-			//下载output_log.txt文件
+			//下载文件
 			const response = await fetch(fileUrl);
 			const streamPipeline = promisify(pipeline);
 			//根据不同匹配数来运行不同安装操作
@@ -90,10 +87,10 @@ class install {
 					//根据插件不同的状态分类处理
 					switch (sameplugin[0].state) {
 						case '启用':
-							fs.renameSync(`${sameplugin[0].path}${sameplugin[0].file}`, `${this.plugins.bin}${sameplugin[0].file}.bak`)
+							fs.renameSync(`${sameplugin[0].path}${sameplugin[0].file}`, path.join(this.plugins.bin, `${sameplugin[0].file}.bak`))
 							break;
 						case '停用':
-							fs.renameSync(`${sameplugin[0].path}${sameplugin[0].file}`, `${this.plugins.bin}${sameplugin[0].file}`)
+							fs.renameSync(`${sameplugin[0].path}${sameplugin[0].file}`, path.join(this.plugins.bin, `${sameplugin[0].file}`))
 							break;
 						default://回收站的不做处理
 					}
@@ -110,13 +107,13 @@ class install {
 					for (num = sameplugin.length - 1; num >= 0; num--) {
 						switch (sameplugin[num].state) {
 							case '启用':
-								fs.renameSync(`${sameplugin[num].path}${sameplugin[num].file}`, `${this.plugins.bin}${sameplugin[num].file}.bak`)
+								fs.renameSync(`${sameplugin[num].path}${sameplugin[num].file}`, path.join(this.plugins.bin, `${sameplugin[num].file}.bak`))
 								break;
 							case '停用':
-								fs.renameSync(`${sameplugin[num].path}${sameplugin[num].file}`, `${this.plugins.bin}${sameplugin[num].file}`)
+								fs.renameSync(`${sameplugin[num].path}${sameplugin[num].file}`, path.join(this.plugins.bin, sameplugin[num].file))
 								break;
 							default://回收站的会直接删除
-								fs.unlink(`${this.plugins.bin}${sameplugin[num].file}`, () => { })
+								fs.unlinkSync(path.join(this.plugins.bin, sameplugin[num].file))
 						}
 					}
 					await streamPipeline(response.body, fs.createWriteStream(path.join(filePath, `${filename}.bak`)));
@@ -129,7 +126,7 @@ class install {
 		} else {
 			//没开启智能安装直接无脑覆盖
 			filename = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss') + '.js'
-			//下载output_log.txt文件
+			//下载文件
 			const response = await fetch(fileUrl);
 			const streamPipeline = promisify(pipeline);
 			await streamPipeline(response.body, fs.createWriteStream(path.join(textPath, `${filename}.bak`)));

@@ -1,14 +1,11 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import { createRequire } from 'module'
 import lodash from 'lodash'
 import Version from "../module/version.js";
 import { Restart } from "../../other/restart.js";
+import { exec, execSync } from "child_process";
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 import ConfigSet from "../module/ConfigSet.js";
 
-//疯狂啃乐神代码(好难啃)
-const require = createRequire(import.meta.url)
-const { exec, execSync } = require('child_process')
 
 let uping = false
 

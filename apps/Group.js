@@ -2,6 +2,7 @@ import plugin from '../../../lib/plugins/plugin.js'
 import ConfigSet from "../module/ConfigSet.js"
 import search from "../module/search.js"
 import common from "../module/common.js"
+import PATH from "path"
 import fs from 'fs';
 
 const _path = process.cwd();//云崽目录
@@ -49,8 +50,7 @@ export class Group extends plugin {
 
         let msg = ["====分组列表===="]
         plugins.group.forEach(item => {
-            let tmp = item.replace(/\/|plugins/g, "");
-            msg.push(`\n${tmp}`);
+            msg.push(`\n${item}`);
         });
         e.reply(msg);
         return true;
@@ -62,19 +62,19 @@ export class Group extends plugin {
         }
 
         let group = e.msg.replace("#创建分组", "");
-        plugins.group.forEach(element => {
-            let key = element.replace(/plugins|\//g, "");
+        plugins.group.forEach(key => {
             if (key == group) {
                 e.reply("已经存在该分组了呢~");
                 return true;
             }
         });
-        let path = `${_path}/plugins/${group}`;
-        plugins.group.push(`plugins/${group}/`);
+        let path = PATH.join(_path,'plugins',group)
+        plugins.group.push(group);
         ConfigSet.saveSet("group", "set", "config", plugins);
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path);
         }
+        return true;
     }
 
     async del(e) {
@@ -83,24 +83,27 @@ export class Group extends plugin {
         }
 
         let group = e.msg.replace("#删除分组", "");
-        let site = plugins.group.indexOf(`plugins/${group}/`);
+        let site = plugins.group.indexOf(group);
+        //删除路径
+        let path = PATH.join(_path,'plugins',group);
+        if (fs.existsSync(path) && fs.statSync(path).isDirectory()) {
+            let tmp = fs.readdirSync(path);
+            if (tmp.length > 0) {
+                e.reply("该分组内不为空，请清理分组内插件后重试")
+                return true;
+            } else fs.rmdirSync(path);
+        } else {
+            e.reply("不存在该分组文件夹哦~");
+        }
         //判断一下分组的位置
         if (site > -1) {
-            let path = `${_path}/plugins/${group}`;
-            if (fs.existsSync(path)) {
-                let tmp = fs.readdirSync(path);
-                if (tmp.length > 0) {
-                    e.reply("该分组内不为空，请清理分组内插件后重试")
-                    return true;
-                } else fs.rmdirSync(path);
-            } else {
-                e.reply("不存在该分组哦~");
-            }
             plugins.group.splice(site, 1);
             ConfigSet.saveSet("group", "set", "config", plugins);
             e.reply("删除成功！")
-            return true;
+        } else {
+            e.reply("不存在该分组配置");
         }
+        return true;
     }
 
     async set(e) {
@@ -110,21 +113,17 @@ export class Group extends plugin {
 
         let keyword = e.msg.replace("#", "").split("设置分组");
         //获取全部分组
-        let all_group = plugins.group.map(group => {
-            return group.replace(/plugins|\//g, "")
-        })
         let tmp = await search.find(keyword[0], 0);
-        let path
         if (tmp.length == 0) {
             e.reply("没有找到该插件哦");
             return true;
         } else if (tmp.length == 1) {
-            path = tmp[0].path + tmp[0].file
+            let path = tmp[0].path + tmp[0].file
             if (!fs.existsSync(path)) {
                 e.reply("设置分组失败了呢~" + `\n有没有可能你没有安装“${msg}”插件`);
                 return true;
             }
-            if (all_group.indexOf(keyword[1]) > -1) {
+            if (plugins.group.indexOf(keyword[1]) > -1) {
                 fs.renameSync(path, `plugins/${keyword[1]}/${tmp[0].file}`)
                 e.reply(`成功设置插件“${keyword[0]}”为分组${keyword[1]}~`);
             } else {
@@ -142,16 +141,17 @@ export class Group extends plugin {
             return true;
         }
 
-        plugins.group.splice(0, plugins.group.length);//清空一下group
-
-        exclude.rule.push(plugins.bin.replace(/plugins|\//g, ""));//排除列表加上辣姬箱目录
-        let pluginlist = fs.readdirSync(`${_path}/plugins`);
-        pluginlist.forEach(path => {
-            if (fs.statSync(`${_path}/plugins/${path}`).isDirectory()) {
-                let key = fs.readdirSync(`${_path}/plugins/${path}`)
-                if (key.indexOf("index.js") > -1 || key.indexOf(".git") > -1 || exclude.rule.find(item => path.includes(item)));//匹配排除正则
+        plugins.group = [];//清空一下group
+        let ignore = exclude.rule;//排除列表
+        ignore.push(PATH.normalize(plugins.bin).split("\\").pop());//排除列表加上辣姬箱目录
+        let pluginlist = fs.readdirSync(PATH.join(_path,'plugins'));
+        pluginlist.forEach(name => {
+            let path = PATH.join(_path,'plugins',name);
+            if (fs.statSync(path).isDirectory()) {
+                let key = fs.readdirSync(path)
+                if (key.includes("index.js") || (fs.existsSync(PATH.join(path,'.git')) && fs.statSync(PATH.join(path,'.git')).isDirectory()) || ignore.includes(name));//匹配排除正则
                 else {
-                    plugins.group.push(`plugins/${path}/`);
+                    plugins.group.push(name);
                 }
             }
         })
