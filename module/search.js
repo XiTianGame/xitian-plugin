@@ -64,7 +64,7 @@ class search {
 	async startwatch() {
 		await this.read();
 		for (let group of this.plugins.group) {
-			let path = PATH.join(PATH.join('./plugins',group));
+			let path = PATH.join('./plugins',group);
 			if (!fs.existsSync(path)) {
 				fs.mkdirSync(path)
 			}
@@ -84,18 +84,14 @@ class search {
 			if (Plugins.has(group)) continue;
 			let Infos = [];
 			for (let file of fs.readdirSync(PATH.join('./plugins',group))) {
-				Infos.push({
-					...await this.parse(PATH.join('./plugins',group,file))
-				})
+				Infos.push(await this.parse(PATH.join('./plugins',group,file)));
 			}
 			Plugins.set(group, Infos)
 		}
 		if (!Plugins.has(this.plugins.bin)) {
 			let Infos = [];
 			for (let file of fs.readdirSync(this.plugins.bin)) {
-				Infos.push({
-					...await this.parse(`${this.plugins.bin}${file}`, true)
-				})
+				Infos.push(await this.parse(PATH.join(this.plugins.bin,file), true));
 			}
 			Plugins.set(this.plugins.bin, Infos)
 		}

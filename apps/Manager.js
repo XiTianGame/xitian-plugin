@@ -74,7 +74,7 @@ export class Manager extends plugin {
 		} else if (plugininfo.length == 1) {//找到一个插件
 			let msg = [
 				`找到插件：${plugininfo[0].file.replace(/.js|.bak|\[.*?\]/g, "")}\n`,
-				`位于分组：${plugininfo[0].path.replace(/plugins|\//g, "")}\n`,
+				`位于分组：${plugininfo[0].path.replace(/plugins|\\|\//g, "")}\n`,
 				`当前状态：${plugininfo[0].state}`
 			]
 			e.reply(msg)
@@ -84,7 +84,7 @@ export class Manager extends plugin {
 			for (let item of plugininfo) {
 				let info = [
 					`找到插件：${item.file.replace(/.js|.bak|\[.*?\]/g, "")}\n`,
-					`位于分组：${item.path.replace(/plugins|\//g, "")}\n`,
+					`位于分组：${item.path.replace(/plugins|\\|\//g, "")}\n`,
 					`当前状态：${item.state}`
 				]
 				msg.push({
@@ -117,12 +117,12 @@ export class Manager extends plugin {
 			e.reply("没有找到该插件哦");
 		} else if (tmp.length == 1) {
 			if (tmp[0].state == "启用") {
-				let path = `${tmp[0].path}${msg}.js`
+				let path = PATH.join(tmp[0].path,msg + ".js");
 				if (!fs.existsSync(path)) {
 					e.reply("停用失败了呢~" + `\n有没有可能你没有安装“${msg}”插件`)
 					return true;
 				}
-				fs.renameSync(`${tmp[0].path}${tmp[0].file}`, `${tmp[0].path}${msg}.js.bak`);
+				fs.renameSync(PATH.join(tmp[0].path,tmp[0].file), PATH.join(tmp[0].path,msg + ".js.bak"));
 				e.reply(`已停用：${msg}` + "\n重启后生效呢~")
 			} else if (tmp[0].state == "停用") {
 				e.reply("该插件已经处于停用状态哦");
@@ -152,12 +152,12 @@ export class Manager extends plugin {
 			if (tmp[0].state == "启用") {
 				e.reply("该插件已经处于启用状态哦");
 			} else if (tmp[0].state == "停用") {
-				let path = `${tmp[0].path}${msg}.js.bak`
+				let path = PATH.join(tmp[0].path,msg + ".js.bak");
 				if (!fs.existsSync(path)) {
 					e.reply("启用失败了呢~" + `\n有没有可能你没有“${msg}”插件`)
 					return true;
 				}
-				fs.renameSync(`${tmp[0].path}${tmp[0].file}`, `${tmp[0].path}${msg}.js`)
+				fs.renameSync(PATH.join(tmp[0].path,tmp[0].file), PATH.join(tmp[0].path,msg + ".js"))
 				e.reply(`已启用：${msg}` + "\n重启后生效呢~")
 			} else if (tmp[0].state == "已删除") {
 				e.reply("该插件处于已删除状态\n请先恢复插件哦");
@@ -194,9 +194,9 @@ export class Manager extends plugin {
 			e.reply("没有找到该插件哦");
 		} else if (tmp.length == 1) {
 			if (tmp[0].state == "启用") {
-				path = `${tmp[0].path}${msg}.js`
+				path = PATH.join(tmp[0].path,msg + ".js");
 			} else if (tmp[0].state == "停用") {
-				path = `${tmp[0].path}${msg}.js.bak`
+				path = PATH.join(tmp[0].path,msg + ".js.bak");
 			} else if (tmp[0].state == "已删除") {
 				e.reply("该插件已经是删除状态哦");
 				return true;
@@ -205,7 +205,7 @@ export class Manager extends plugin {
 				return true;
 			}
 			if (fs.existsSync(path)) {
-				fs.renameSync(`${tmp[0].path}${tmp[0].file}`, PATH.join(plugins.bin, `[${tmp[0].origin}]${msg}.js.bak`))
+				fs.renameSync(PATH.join(tmp[0].path,tmp[0].file), PATH.join(plugins.bin, `[${tmp[0].origin}]${msg}.js.bak`))
 				e.reply(`已删除：${msg}` + "\n重启后生效呢~")
 				return true;
 			} else e.reply("删除失败了呢~" + `\n有没有可能你没有安装“${msg}”插件`)
@@ -227,8 +227,8 @@ export class Manager extends plugin {
 						e.reply("没有找到该插件哦");
 						break;
 					case 1:
-						if (fs.existsSync(`${tmp[0].path}${tmp[0].file}`)) {
-			                fs.unlinkSync(`${tmp[0].path}${tmp[0].file}`);
+						if (fs.existsSync(PATH.join(tmp[0].path,tmp[0].file))) {
+			                fs.unlinkSync(PATH.join(tmp[0].path,tmp[0].file));
 			                this.e.reply(`插件“${msg}”已经彻底删除，再也找不回来了哦~`)
 			                return true
 		                }
@@ -275,11 +275,11 @@ export class Manager extends plugin {
 						return true;
 					}
 					//先确定有没有这个分组
-					if (!fs.existsSync(`plugins/${origin[0]}`)) {
+					if (!fs.existsSync(PATH.join("./plugins", origin[0]))) {
 						e.reply(`有没有可能你没有${origin[0]}分组\n即将恢复至默认分组`)
-						fs.renameSync(PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`), `plugins/${config.default_group}/${msg}.js`)
+						fs.renameSync(PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`), PATH.join("plugins",config.default_group,`${msg}.js`));
 					} else {
-						fs.renameSync(PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`), `plugins/${origin[0]}/${msg}.js`)
+						fs.renameSync(PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`), PATH.join("plugins",origin[0],`${msg}.js`));
 					}
 				} else {
 					path = PATH.join(plugins.bin, `${msg}.js.bak`)
@@ -287,7 +287,7 @@ export class Manager extends plugin {
 						e.reply("恢复失败了呢~" + `\n有没有可能你没有“${msg}”插件`)
 						return true;
 					}
-					fs.renameSync(PATH.join(plugins.bin, `${msg}.js.bak`), `plugins/${config.default_group}/${msg}.js`)
+					fs.renameSync(PATH.join(plugins.bin, `${msg}.js.bak`), PATH.join("plugins",config.default_group,`${msg}.js`))
 				}
 				e.reply(`已恢复：${msg}` + "\n重启后生效呢~")
 			}
@@ -314,7 +314,7 @@ export class Manager extends plugin {
 				e.reply("未找到该插件")
 				break;
 			case 1:
-				fs.renameSync(`${tmp[0].path}${tmp[0].file}`, `${tmp[0].path}${key[1]}.js`);
+				fs.renameSync(PATH.join(tmp[0].path,tmp[0].file), PATH.join(tmp[0].path,`${key[1]}.js`));
 				e.reply(`插件“${key[0]}”重命名成功`)
 				break;
 			default:

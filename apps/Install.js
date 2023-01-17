@@ -158,7 +158,7 @@ export class Install extends plugin {
 		//单个安装的操作
 		if (my[e.user_id] && my["单次"]) {
 
-			if (!e.file || !e.file.name.includes("js")) {
+			if (!e.file || !e.file.name.endsWith(".js")) {
 				e.reply([segment.at(e.user_id), '发送的不是js插件呢，安装已取消！'])
 				cancel(e);
 				return true;
@@ -184,7 +184,7 @@ export class Install extends plugin {
 		//批量安装的操作
 		if (my[e.user_id] && my["批量"]) {
 
-			if (!e.file || !e.file.name.includes("js")) {
+			if (!e.file || !e.file.name.endsWith(".js")) {
 				e.reply([segment.at(e.user_id), '发送的不是js插件呢'])
 				return true;
 			}
