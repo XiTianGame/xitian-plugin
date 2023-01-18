@@ -34,8 +34,7 @@ export function supportGuoba() {
                     bottomHelpMessage: '设置后新增插件将安装到该分组',
                     component: 'Select',
                     componentProps: {
-                        options: cfg.getConfig("group", "set").group.map(item => {
-                            let name = item.replace(/\/|plugins/g, "");
+                        options: cfg.getConfig("group", "set").group.map(name => {
                             return { label: name, value: name }
                         }),
                         placeholder: '请选择默认分组',
@@ -79,6 +78,26 @@ export function supportGuoba() {
                     required: true,
                     componentProps: {
                         placeholder: '请输入等待时间',
+                    },
+                },
+                {
+                    field: 'group.bin',
+                    label: '回收站路径',
+                    helpMessage: '被删除的插件会进入回收站',
+                    bottomHelpMessage: '路径支持相对和绝对路径',
+                    component: 'Input',
+                    componentProps: {
+                        placeholder: '请输入回收站路径',
+                    },
+                },
+                {
+                    field: 'group.group',
+                    label: '分组列表',
+                    component: 'GTags',
+                    bottomHelpMessage: 'plugins目录下文件夹就是分组',
+                    componentProps: {
+                        allowAdd: true,
+                        allowDel: true,
                     },
                 },
                 {
@@ -129,6 +148,9 @@ export function supportGuoba() {
                 const JSData = {
                     js: cfg.getConfig("js", "set"),
                 };
+                const GroupData = {
+                    group: cfg.getConfig("group", "set"),
+                }
                 const ExcludeData = {
                     exclude: cfg.getConfig("exclude", "set"),
                 };
@@ -138,6 +160,7 @@ export function supportGuoba() {
                 //引用data，而不是直接调用，学到了
                 return {
                     ...JSData,
+                    ...GroupData,
                     ...ExcludeData,
                     ...AuthData
                 };
@@ -148,12 +171,14 @@ export function supportGuoba() {
 
                 //先读取一下配置
                 let JSData = cfg.getConfig("js", "set");
+                let GroupData = cfg.getConfig("group", "set");
                 let ExcludeData = cfg.getConfig("exclude", "set");
                 let AuthData = cfg.getConfig("auth", "set");
 
                 //两个配置合并一下
                 let mergedData = {
                     JSData: JSData,
+                    GroupData: GroupData,
                     ExcludeData: ExcludeData,
                     AuthData: AuthData
                 }
@@ -165,6 +190,9 @@ export function supportGuoba() {
                     if (key.startsWith("js.")) {
                         mergedData.JSData[key.replace("js.", "")] = data[key];
                     }
+                    if (key.startsWith("group.")) {
+                        mergedData.GroupData[key.replace("group.", "")] = data[key];
+                    }
                     if (key.startsWith("exclude.")) {
                         mergedData.ExcludeData[key.replace("exclude.", "")] = data[key];
                     }
@@ -175,6 +203,7 @@ export function supportGuoba() {
 
                 //保存数据
                 cfg.saveSet("js", "set", "config", mergedData.JSData);
+                cfg.saveSet("group", "set", "config", mergedData.GroupData);
                 cfg.saveSet("exclude", "set", "config", mergedData.ExcludeData);
                 cfg.saveSet("auth", "set", "config", mergedData.AuthData);
 
