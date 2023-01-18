@@ -120,7 +120,7 @@ export class Manager extends plugin {
 			case 1:
 				switch(tmp[0].state){
 					case "启用":
-						let path = "./" + PATH.join(tmp[0].path,msg + ".js");
+						let path = PATH.join(tmp[0].path,msg + ".js");
 					    if (!fs.existsSync(path)) {
 						    e.reply("停用失败了呢~" + `\n有没有可能你没有安装“${msg}”插件`)
 						    return true;
@@ -163,7 +163,7 @@ export class Manager extends plugin {
 						e.reply("该插件已经处于启用状态哦");
 						break;
 					case "停用":
-						let path = "./" + PATH.join(tmp[0].path,msg + ".js.bak");
+						let path = PATH.join(tmp[0].path,msg + ".js.bak");
 				        if (!fs.existsSync(path)) {
 					        e.reply("启用失败了呢~" + `\n有没有可能你没有“${msg}”插件`)
 					        return true;
@@ -211,10 +211,10 @@ export class Manager extends plugin {
 			case 1:
 				switch(tmp[0].state){
 					case "启用":
-						path = "./" + PATH.join(tmp[0].path,msg + ".js");
+						path = PATH.join(tmp[0].path,msg + ".js");
 						break;
 					case "停用":
-						path = "./" + PATH.join(tmp[0].path,msg + ".js.bak");
+						path = PATH.join(tmp[0].path,msg + ".js.bak");
 						break;
 					case "已删除":
 						e.reply("该插件已经是删除状态哦");
@@ -247,8 +247,8 @@ export class Manager extends plugin {
 						e.reply("没有找到该插件哦");
 						break;
 					case 1:
-						if (fs.existsSync("./" + PATH.join(tmp[0].path,tmp[0].file))) {
-			                fs.unlinkSync("./" + PATH.join(tmp[0].path,tmp[0].file));
+						if (fs.existsSync(PATH.join(tmp[0].path,tmp[0].file))) {
+			                fs.unlinkSync(PATH.join(tmp[0].path,tmp[0].file));
 			                this.e.reply(`插件“${msg}”已经彻底删除，再也找不回来了哦~`)
 			                return true
 		                }
@@ -293,20 +293,20 @@ export class Manager extends plugin {
 						let origin = tmp[0].file.replace(/.js|.bak|\[/g, "").split("]");
 						let path
 						if (origin.length > 1) {
-							path = "./" + PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`)
+							path = PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`)
 							if (!fs.existsSync(path)) {
 								e.reply("恢复失败了呢~" + `\n有没有可能你没有“${msg}”插件`)
 								return true;
 							}
 						    //先确定有没有这个分组
-							if (!fs.existsSync("./" + PATH.join("./plugins", origin[0]))) {
+							if (!fs.existsSync(PATH.join("./plugins", origin[0]))) {
 								e.reply(`有没有可能你没有${origin[0]}分组\n即将恢复至默认分组`)
 								fs.renameSync(PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`), PATH.join("plugins",config.default_group,`${msg}.js`));
 							} else {
 								fs.renameSync(PATH.join(plugins.bin, `[${origin[0]}]${msg}.js.bak`), PATH.join("plugins",origin[0],`${msg}.js`));
 							}
 						} else {
-							path = "./" + PATH.join(plugins.bin, `${msg}.js.bak`)
+							path = PATH.join(plugins.bin, `${msg}.js.bak`)
 							if (!fs.existsSync(path)) {
 								e.reply("恢复失败了呢~" + `\n有没有可能你没有“${msg}”插件`)
 								return true;
