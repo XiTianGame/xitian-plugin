@@ -1,11 +1,12 @@
 import fs from 'fs';
+import os from "os";
 import chokidar from "chokidar";
 import lodash from "lodash"
 import PATH from "path"
 import ConfigSet from "../module/ConfigSet.js";
 
 const YZpath = process.cwd()
-
+const divide = os.platform() === "linux" ? "/" : "\\"
 const Plugins = new Map()
 
 class search {
@@ -118,7 +119,7 @@ class search {
 			name: '???',
 			dsc: '???',
 			state: '???',
-			origin: tmp.dir.split('\\').pop()
+			origin: tmp.dir.split(divide).pop()
 		}
 		//是文件夹
 		if (fs.statSync(path).isDirectory()) return {
@@ -130,7 +131,7 @@ class search {
 			name: '???',
 			dsc: '???',
 			state: '???',
-			origin: tmp.dir.split('\\').pop()
+			origin: tmp.dir.split(divide).pop()
 		}
 		let Info = fs.readFileSync(path, 'utf8').match(/name: ?('|"|`).*,|dsc: ?('|"|`).*,/g) || []
 		Info = Info.map(i => { return i.replace(/name:|dsc:| |'|"|`|,/g, '') });
@@ -148,7 +149,7 @@ class search {
 		}
 		const type = tmp.ext.replace(".","") || '???'
 		const state = isBin ? '已删除' : `${type === 'js' ? '启用' : type === 'bak' ? '停用' : '???'}`
-		const origin = (file.match(/\[.*?\]/) || [tmp.dir.split('\\').pop()])[0].replace(/\[|\]/g, '')
+		const origin = (file.match(/\[.*?\]/) || [tmp.dir.split(divide).pop()])[0].replace(/\[|\]/g, '')
 		return {
 			type: type,
 			file: file,
@@ -193,11 +194,11 @@ class search {
 			Plugins.set(key, tmp)
 		}).on("unlink", async (path) => {
 			let tmp = Plugins.get(key) || []
-			tmp = tmp.filter(item=>item.file !== path.split("\\").pop());
+			tmp = tmp.filter(item=>item.file !== PATH.parse(path).base);
 			Plugins.set(key, tmp)
 		}).on("unlinkDir", async (path) => {
 			let tmp = Plugins.get(key) || []
-			tmp = tmp.filter(item=>item.file !== path.split("\\").pop());
+			tmp = tmp.filter(item=>item.file !== PATH.parse(path).base);
 			Plugins.set(key, tmp)
 		}).on("error", (error) => {
 			logger.error(`[插件管理器]监听插件错误:\n${error}`)
