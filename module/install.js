@@ -87,10 +87,10 @@ class install {
 					//根据插件不同的状态分类处理
 					switch (sameplugin[0].state) {
 						case '启用':
-							fs.renameSync(`${sameplugin[0].path}${sameplugin[0].file}`, path.join(this.plugins.bin, `${sameplugin[0].file}.bak`))
+							fs.renameSync(path.join(sameplugin[0].path,sameplugin[0].file), path.join(this.plugins.bin, `${sameplugin[0].file}.bak`))
 							break;
 						case '停用':
-							fs.renameSync(`${sameplugin[0].path}${sameplugin[0].file}`, path.join(this.plugins.bin, `${sameplugin[0].file}`))
+							fs.renameSync(path.join(sameplugin[0].path,sameplugin[0].file), path.join(this.plugins.bin, `${sameplugin[0].file}`))
 							break;
 						default://回收站的不做处理
 					}
@@ -107,10 +107,10 @@ class install {
 					for (num = sameplugin.length - 1; num >= 0; num--) {
 						switch (sameplugin[num].state) {
 							case '启用':
-								fs.renameSync(`${sameplugin[num].path}${sameplugin[num].file}`, path.join(this.plugins.bin, `${sameplugin[num].file}.bak`))
+								fs.renameSync(path.join(sameplugin[num].path,sameplugin[num].file), path.join(this.plugins.bin, `${sameplugin[num].file}.bak`))
 								break;
 							case '停用':
-								fs.renameSync(`${sameplugin[num].path}${sameplugin[num].file}`, path.join(this.plugins.bin, sameplugin[num].file))
+								fs.renameSync(path.join(sameplugin[num].path,sameplugin[num].file), path.join(this.plugins.bin, sameplugin[num].file))
 								break;
 							default://回收站的会直接删除
 								fs.unlinkSync(path.join(this.plugins.bin, sameplugin[num].file))
