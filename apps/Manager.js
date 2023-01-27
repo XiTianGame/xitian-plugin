@@ -262,7 +262,9 @@ export class Manager extends plugin {
 				this.e.reply("删除已取消")
 				break;
 			default:
-				this.e.reply("请回答 是/否 来进行操作")
+				if(!this.e.msg.includes("彻底删除后再也找不回来了哦") && !this.e.msg.includes("请回答 是/否 来进行操作")) {
+					this.e.reply("请回答 是/否 来进行操作");
+				}    
 		}
 		return true;
 	}
