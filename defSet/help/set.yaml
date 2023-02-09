@@ -26,6 +26,9 @@
     - icon: rename
       title: "#插件 xxx 重命名 xxx"
       desc: 重命名名为 xxx 的插件
+    - icon: debug
+      title: "#测试命令 xxx"
+      desc: 测试响应指令的插件，用于解决冲突
     - icon: upload
       title: "#查看插件 xxx"
       desc: 发送名为 xxx 的插件
@@ -34,6 +37,9 @@
     - icon: list
       title: "#插件列表"
       desc: 查看所有分组的插件
+    - icon: command
+      title: "#命令总览"
+      desc: 查看所有启用插件的命令
     - icon: find
       title: "#查找插件 xxx"
       desc: 从所有分组查找名为 xxx 的js插件
