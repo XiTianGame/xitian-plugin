@@ -41,8 +41,11 @@ export class regTest extends plugin {
             }
             msgs.push(msg)
         }
-        msgs = await com.makeForwardMsg(e,msgs);
-        await e.reply(msgs);
+        msgs = lodash.chunk(msgs,50);
+        for(let i in msgs){
+            msgs[i] = await com.makeForwardMsg(e,msgs[i],`第${Number(i) + 1}页`);
+            await e.reply(msgs[i]);
+        }
         return true;
     }
 
