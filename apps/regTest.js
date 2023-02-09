@@ -37,7 +37,7 @@ export class regTest extends plugin {
                 continue;
             }
             for(let v in p.rule){
-                msg += `命令正则<${v}>：${p.rule[v].reg}\n`
+                msg += `命令正则<${Number(v) + 1}>：${p.rule[v].reg}\n`
             }
             msgs.push(msg)
         }
