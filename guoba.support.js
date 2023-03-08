@@ -1,5 +1,3 @@
-import path from 'path'
-import lodash from 'lodash'
 import cfg from './module/ConfigSet.js'
 
 const _path = process.cwd();

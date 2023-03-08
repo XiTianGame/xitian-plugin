@@ -1,5 +1,3 @@
-import moment from "moment";
-import lodash from "lodash";
 import base from "./base.js";
 
 export default class Version extends base {

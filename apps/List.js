@@ -1,5 +1,4 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import cfg from '../../../lib/config/config.js'
 import ConfigSet from "../module/ConfigSet.js"
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import list from '../module/list.js'

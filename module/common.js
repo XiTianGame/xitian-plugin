@@ -1,4 +1,3 @@
-import cfg from '../../../lib/config/config.js'
 import ConfigSet from "./ConfigSet.js";
 
 
