@@ -68,7 +68,7 @@ class install {
 	async install(fileUrl, textPath, filename, id = cfg.masterQQ[0]) {
 		//智能安装
 		if (this.config.auto_install && filename) {
-			let sameplugin = await search.find((await commons.rename(filename)).replace(/.js|.bak/g, ""), 0);//提取插件关键名字
+			let sameplugin = await search.find((await commons.rename(filename)).replace(/.js|.bak/g, ""), 1);//提取插件关键名字
 			let filePath = await this.choose(textPath, sameplugin);
 			//下载文件
 			const response = await fetch(fileUrl);
