@@ -8,19 +8,6 @@ const version = (versionData && versionData.length && versionData[0].version) ||
 logger.info(`-----------＾ω＾----------`)
 logger.info(`插件管理器${version}初始化~`)
 
-/**
-* 初始化配置文件
-*/
-let defSetlist = fs.readdirSync("./plugins/xitian-plugin/defSet/")
-defSetlist.forEach(item => {
-    if (fs.readdirSync(`./plugins/xitian-plugin/defSet/${item}`).indexOf(".ignore") > -1);
-    else {
-        let file = `./plugins/xitian-plugin/config/${item}.set.yaml`
-        if (!fs.existsSync(file)) {
-            fs.copyFileSync(`./plugins/xitian-plugin/defSet/${item}/set.yaml`, file);
-        }
-    }
-});
 
 /**加载插件**/
 const files = fs.readdirSync('./plugins/xitian-plugin/apps').filter((file) => file.endsWith('.js'))

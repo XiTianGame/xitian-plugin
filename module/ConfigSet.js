@@ -20,14 +20,16 @@ class ConfigSet {
 
         /** 监听文件 */
         this.watcher = { config: {}, defSet: {} };
+
+        this.ignore = ['char.set', 'help.set', 'lexicon.set', 'version.set'];
     }
 
     /**
      * 拼接分组路径
      * @param name 分组名
      */
-    group(name){
-        return PATH.join("./plugins",name,"/")
+    group(name) {
+        return PATH.join("./plugins", name, "/")
     }
 
     /**
@@ -40,11 +42,8 @@ class ConfigSet {
 
     /** 用户配置 */
     getConfig(app, name) {
-        let ignore = [];
-
-        if (ignore.includes(`${app}.${name}`)) {
-            return this.getYaml(app, name, "config");
-        }
+        if (this.ignore.includes(`${app}.${name}`)) return this.getdefSet(app, name);
+        this.checkConfig(app, name)
 
         return {
             ...this.getdefSet(app, name),
@@ -86,6 +85,21 @@ class ConfigSet {
         this[type][key] = YAML.parse(this.file[type][key]);
 
         return this[type][key];
+    }
+
+    checkConfig(app, name) {
+        let file = this.getFilePath(app, name, "config");
+        if (!fs.existsSync(file)) {
+            logger.debug(`创建用户配置文件[${app}][${name}]`)
+            this.cpCfg(app, name);
+        }
+    }
+
+    cpCfg(app, name, force = false) {
+        let set = this.getFilePath(app, name, "config");
+        if (force || !fs.existsSync(set)) {
+            fs.copyFileSync(this.getFilePath(app, name, "defSet"), set);
+        }
     }
 
     getFilePath(app, name, type) {
