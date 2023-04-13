@@ -63,7 +63,6 @@ class search {
 	 * 开始监视文件夹
 	 */
 	async startwatch() {
-		await this.read();
 		for (let group of this.plugins.group) {
 			let path = PATH.join('./plugins',group);
 			if (!fs.existsSync(path)) {
@@ -74,6 +73,7 @@ class search {
 		if (!fs.existsSync(this.plugins.bin)) {
 			fs.mkdirSync(this.plugins.bin)
 		}
+		await this.read();
 		this.watch(this.plugins.bin,this.plugins.bin, true)
 	}
 
