@@ -1,6 +1,10 @@
 import fs from 'node:fs'
 import ConfigSet from "./module/ConfigSet.js";
 
+if (!global.segment) {
+  global.segment = (await import("oicq")).segment
+}
+
 let versionData = ConfigSet.getdefSet("version", "set");
 
 const version = (versionData && versionData.length && versionData[0].version) || "1.0.0";

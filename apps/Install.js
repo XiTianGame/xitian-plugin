@@ -2,7 +2,6 @@ import plugin from '../../../lib/plugins/plugin.js'
 import ConfigSet from "../module/ConfigSet.js"
 import install from "../module/install.js"
 import common from "../module/common.js"
-import { segment } from "oicq";
 import PATH from "path"
 import fs from 'fs';
 
