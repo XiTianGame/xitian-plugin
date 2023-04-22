@@ -75,7 +75,7 @@ export class update extends plugin {
      * @returns
     */
     async checkGit() {
-        let ret = await execSync('git --version', { encoding: 'utf-8' })
+        let ret = await execSync('git --version', { encoding: 'utf-8', windowsHide: true })
         if (!ret || !ret.includes('git version')) {
             await this.reply('请先安装git')
             return false
@@ -146,7 +146,7 @@ export class update extends plugin {
             cm = `git -C ./plugins/${plugin}/ rev-parse --short HEAD`
         }
 
-        let commitId = await execSync(cm, { encoding: 'utf-8' })
+        let commitId = await execSync(cm, { encoding: 'utf-8', windowsHide: true })
         commitId = lodash.trim(commitId)
 
         return commitId
@@ -160,7 +160,7 @@ export class update extends plugin {
 
         let time = ''
         try {
-            time = await execSync(cm, { encoding: 'utf-8' })
+            time = await execSync(cm, { encoding: 'utf-8', windowsHide: true })
             time = lodash.trim(time)
         } catch (error) {
             logger.error(error.toString())
@@ -223,7 +223,7 @@ export class update extends plugin {
 
         let logAll
         try {
-            logAll = await execSync(cm, { encoding: 'utf-8' })
+            logAll = await execSync(cm, { encoding: 'utf-8', windowsHide: true })
         } catch (error) {
             logger.error(error.toString())
             this.reply(error.toString())
