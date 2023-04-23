@@ -79,6 +79,12 @@ export function supportGuoba() {
                     },
                 },
                 {
+                    field: 'group.onlyJS',
+                    label: '只关注js',
+                    bottomHelpMessage: '是否只关注js类型的文件',
+                    component: 'Switch',
+                },
+                {
                     field: 'group.bin',
                     label: '回收站路径',
                     helpMessage: '被删除的插件会进入回收站',

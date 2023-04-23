@@ -22,12 +22,18 @@ export default class list extends base {
 
     async dealData(type = 'group') {
         let Plugin = await search.read();
-        let groups = ConfigSet.getConfig('group', 'set')[type];
+        let groupCfg = ConfigSet.getConfig('group', 'set')
+        let groups = groupCfg[type];
         let data = [];
         groups.forEach(group => {
             data.push({
                 group: group,
-                list: Plugin.get(group)
+                list: Plugin.get(group).filter(item=>{
+                    if(groupCfg.onlyJS && !['js','bak'].includes(item.type)) {
+                        return false
+                    }
+                    return true
+                })
             })
         });
         return data
