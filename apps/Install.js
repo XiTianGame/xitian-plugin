@@ -5,12 +5,10 @@ import common from "../module/common.js"
 import PATH from "path"
 import fs from 'fs';
 
-let config = ConfigSet.getConfig("js","set");
-let plugins = ConfigSet.getConfig("group","set");
+let config = ConfigSet.getConfig("js", "set");
+let plugins = ConfigSet.getConfig("group", "set");
 
-
-let my = {};
-let confirm = {};
+const state = {};
 
 export class Install extends plugin {
 	constructor() {
@@ -31,7 +29,7 @@ export class Install extends plugin {
 				},
 				{
 					reg: '(.*)',
-					fnc: 'Msg',
+					fnc: 'install',
 					log: false
 				},
 				{
@@ -53,28 +51,12 @@ export class Install extends plugin {
 		}
 		//是否包含文件
 		if (!e.file) {
-			if (my[e.user_id]) {
-				clearTimeout(my[e.user_id]);
-			}
-			my[e.user_id] = setTimeout(() => {
-				if (my[e.user_id]) {
-					delete my[e.user_id];
-				}
-				if (my["单次"]) {
-					delete my["单次"]
-				}
-				e.reply("操作超时，请重新发送安装指令哦")
-			}, config.timeout * 1000);//等待js文件
-			my["单次"] = true;
-
-			e.reply([segment.at(e.user_id), " 请发送js插件"]);
+			state.type = 1
+			e.reply([segment.at(e.user_id), "请发送js插件"]);
 			return true;
 		}
 
-		my[e.user_id] = true;
-		my["单次"] = true;
-
-		return this.Msg(e);//消息包含js文件，直接安装
+		return this.install();//消息包含js文件，直接安装
 	}
 
 	async batch(e) {
@@ -84,172 +66,95 @@ export class Install extends plugin {
 		let keyword = e.msg.replace(/#|批量安装插件/g, "");
 
 		if (keyword == "开始") {
-
+			state.type = 2
 			if (!e.file) {
-				if (my[e.user_id]) {
-					clearTimeout(my[e.user_id]);
-				}
-				my[e.user_id] = setTimeout(() => {
-					if (my[e.user_id]) {
-						delete my[e.user_id];
-					}
-					if (my["批量"]) {
-						delete my["批量"]
-					}
-					e.reply(`超过${config.timeout}秒未发送消息，批量安装已结束`)
-				}, config.timeout * 1000);//等待js文件
-				my["批量"] = true;
-				e.reply([segment.at(e.user_id), " 请发送js插件"]);
+				state.time = setTimeout(() => {
+					e.reply("超过" + config.timeout + "秒未发送文件，安装已取消")
+				}, config.timeout * 1000)
+				e.reply([segment.at(e.user_id), "请发送js插件"]);
 				return true;
 			}
-			my[e.user_id] = true;
-			my["批量"] = true;
 
-			return this.Msg(e);
+			return this.install();
 		}
 
 		if (keyword == "结束") {
-			cancel(e);
+			if (state.time) clearTimeout(state.time)
+			state.type = 0
 			e.reply("批量安装已结束~")
 			return true;
 		}
 	}
 
-	//消息发送监听
-	async Msg(e) {
-		//不是主人
+	async install(e) {
+		if (!state.type) return false;
 		if (!common.auth(e)) {
 			return false;
 		}
-		//不是发送安装的人
-		if (!my[e.user_id] && !confirm[e.user_id]) {
-			return false;
-		}
+
 		if (e.raw_message.includes("请发送js插件") || e.raw_message.includes("发送的不是js插件呢")) {
 			return false;
 		}
-		//清空回收站的确认操作
-		if (confirm[e.user_id]) {
-			if (!e.msg) return false
-			if (e.msg == "是") {
-				//清空bin内的全部文件
-				let files = fs.readdirSync(plugins.bin);
-				files.forEach(item => {
-					//rm暴力删除
-					fs.rmSync(PATH.join(plugins.bin,item),{recursive: true, force: true})
-				});
-				cancel(e);
-				e.reply("插件回收站已清空")
-				return true;
-			} else if (e.msg == "否") {
-				cancel(e);
-				e.reply("操作已取消")
-				return true;
-			}
-			return false;
-		}
-		//不允许群聊安装插件
-		if (e.isGroup) {
-			e.reply("不允许群聊安装插件，安装已取消");
-			cancel(e);
-			return true;
-		}
-		//单个安装的操作
-		if (my[e.user_id] && my["单次"]) {
 
-			if (!e.file || !e.file.name.endsWith(".js")) {
-				e.reply([segment.at(e.user_id), '发送的不是js插件呢，安装已取消！'])
-				cancel(e);
-				return true;
-			}
-
-			if (e.message[0].size > config.maxSize) {
-				cancel(e);
-				e.reply("文件过大，已取消本次安装");
-				return true;
-			}
-
-			let textPath = ConfigSet.group(config.default_group)
-			//获取下载链接
-			let fileUrl = await e.friend.getFileUrl(e.file.fid);
-			let filename = e.file.name;
-			if (config.auto_rename) {
-				filename = await common.rename(filename);//重新命名插件
-			}
-			await install.install(fileUrl, textPath, filename, e.user_id);//调用安装函数
-			cancel(e);
-			return true;
-		}
-		//批量安装的操作
-		if (my[e.user_id] && my["批量"]) {
-
-			if (!e.file || !e.file.name.endsWith(".js")) {
-				e.reply([segment.at(e.user_id), '发送的不是js插件呢'])
-				return true;
-			}
-
-			if (e.message[0].size > config.maxSize) {
-				e.reply("文件过大，无法安装该插件");
-				return true;
-			}
-			//重置时间
-			cancel(e);
-			my[e.user_id] = setTimeout(() => {
-				if (my[e.user_id]) {
-					delete my[e.user_id];
-				}
-				if (my["批量"]) {
-					delete my["批量"];
-				}
-				e.reply(`超过${config.timeout}秒未发送消息，批量安装已结束~`)
-			}, config.timeout * 1000);//等待js文件
-
-			let textPath = ConfigSet.group(config.default_group);
-			//获取下载链接
-			let fileUrl = await e.friend.getFileUrl(e.file.fid);
-			let filename = e.file.name;
-			if (config.auto_rename) {
-				filename = await common.rename(filename);//重新命名插件
-			}
-			await install.install(fileUrl, textPath, filename, e.user_id);//调用安装函数
+		if (!e.file || !e.file.name.endsWith(".js")) {
+			e.reply([segment.at(e.user_id), '请发送js文件'])
 			return true;
 		}
 
-		return false;//都没匹配就溜了
+		if (e.message[0].size > config.maxSize) {
+			e.reply("文件过大，已取消本次安装");
+			return true;
+		}
+
+		if (state.type == 1) {
+			state.type = 0
+		} else if (state.type == 2) {
+			clearTimeout(state.time);
+			state.time = setTimeout(() => {
+				e.reply("超过" + config.timeout + "秒未发送文件，安装已取消")
+				state.type = 0
+			}, config.timeout * 1000)
+		}
+
+		let textPath = ConfigSet.group(config.default_group);
+		//获取下载链接
+		let fileUrl = await this.e[this.e.isGroup ? 'group' : 'friend'].getFileUrl(this.e.file.fid);
+		let filename = this.e.file.name;
+		if (config.auto_rename) {
+			filename = await common.rename(filename);//重新命名插件
+		}
+		await install.install(fileUrl, textPath, filename, this.e.user_id);//调用安装函数
+		return true;
 	}
 
 	async clear(e) {
 		if (!common.auth(e)) {
 			return true;
 		}
-		if (confirm[e.user_id]) {
-			clearTimeout(confirm[e.user_id]);
-		}
-		confirm[e.user_id] = setTimeout(() => {
-			if (confirm[e.user_id]) {
-				delete confirm[e.user_id];
-			}
-			e.reply("操作超时，已取消清空回收站指令")
-		}, config.timeout * 1000);//等待操作指令
 		e.reply("警告！此操作会清空回收站内的全部插件,是否继续（是/否）")
+		this.setContext('delete', e.isGroup, config.timeout)
 		return true;
 	}
-}
 
-//取消操作
-function cancel(e) {
-	if (my[e.user_id]) {
-		clearTimeout(my[e.user_id]);
-		delete my[e.user_id];
-	}
-	if (confirm[e.user_id]) {
-		clearTimeout(confirm[e.user_id]);
-		delete confirm[e.user_id];
-	}
-	if (my["单次"]) {
-		delete my["单次"];
-	}
-	if (my["批量"]) {
-		delete my["批量"];
+	async delete(e) {
+		switch (this.e.msg) {
+			case '是':
+				let files = fs.readdirSync(plugins.bin);
+				files.forEach(item => {
+					//rm暴力删除
+					fs.rmSync(PATH.join(plugins.bin, item), { recursive: true, force: true })
+				});
+				this.e.reply("插件回收站已清空")
+				this.finish('delete', this.e.isGroup)
+				break;
+			case '否':
+				this.e.reply("操作已取消")
+				this.finish('delete', this.e.isGroup);
+				break;
+			default:
+				this.e.reply("请发送（是/否）进行选择")
+				return false;
+		}
+		return false;
 	}
 }
