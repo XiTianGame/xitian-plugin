@@ -24,6 +24,10 @@ export class Install extends plugin {
 					fnc: 'New'
 				},
 				{
+					reg: '^#取消安装(插件)?$',
+					fnc: 'cancel'
+				},
+				{
 					reg: '^#(开始|结束)批量安装插件$',
 					fnc: 'batch'
 				},
@@ -57,6 +61,19 @@ export class Install extends plugin {
 		}
 
 		return this.install();//消息包含js文件，直接安装
+	}
+
+	async cancel(e) {
+		if (!common.auth(e)) {
+			return true;
+		}
+		if(state.type) {
+			state.type = 0;
+			e.reply('安装已取消')
+		}else {
+			e.reply('当前未处于等待插件状态')
+		}
+		return true
 	}
 
 	async batch(e) {
