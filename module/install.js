@@ -219,7 +219,7 @@ class install {
 		} catch (err) {
 			return false;
 		}
-		if (!response.status == 200) return false;
+		if (response.status !== 200) return false;
 
 		return true;
 	}
