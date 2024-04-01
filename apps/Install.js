@@ -67,10 +67,10 @@ export class Install extends plugin {
 		if (!common.auth(e)) {
 			return true;
 		}
-		if(state.type) {
+		if (state.type) {
 			state.type = 0;
 			e.reply('安装已取消')
-		}else {
+		} else {
 			e.reply('当前未处于等待插件状态')
 		}
 		return true

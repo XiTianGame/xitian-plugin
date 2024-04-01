@@ -87,10 +87,10 @@ class install {
 					//根据插件不同的状态分类处理
 					switch (sameplugin[0].state) {
 						case '启用':
-							fs.renameSync(path.join(sameplugin[0].path,sameplugin[0].file), path.join(this.plugins.bin, `${sameplugin[0].file}.bak`))
+							fs.renameSync(path.join(sameplugin[0].path, sameplugin[0].file), path.join(this.plugins.bin, `${sameplugin[0].file}.bak`))
 							break;
 						case '停用':
-							fs.renameSync(path.join(sameplugin[0].path,sameplugin[0].file), path.join(this.plugins.bin, `${sameplugin[0].file}`))
+							fs.renameSync(path.join(sameplugin[0].path, sameplugin[0].file), path.join(this.plugins.bin, `${sameplugin[0].file}`))
 							break;
 						default://回收站的不做处理
 					}
@@ -107,10 +107,10 @@ class install {
 					for (num = sameplugin.length - 1; num >= 0; num--) {
 						switch (sameplugin[num].state) {
 							case '启用':
-								fs.renameSync(path.join(sameplugin[num].path,sameplugin[num].file), path.join(this.plugins.bin, `${sameplugin[num].file}.bak`))
+								fs.renameSync(path.join(sameplugin[num].path, sameplugin[num].file), path.join(this.plugins.bin, `${sameplugin[num].file}.bak`))
 								break;
 							case '停用':
-								fs.renameSync(path.join(sameplugin[num].path,sameplugin[num].file), path.join(this.plugins.bin, sameplugin[num].file))
+								fs.renameSync(path.join(sameplugin[num].path, sameplugin[num].file), path.join(this.plugins.bin, sameplugin[num].file))
 								break;
 							default://回收站的会直接删除
 								fs.unlinkSync(path.join(this.plugins.bin, sameplugin[num].file))
@@ -196,8 +196,8 @@ class install {
 		/**执行安装命令 */
 		let command = `cd ${_path}/plugins && git clone ${url}`;
 		let result = await this.execSync(command);
-		
-		if(result.error) {
+
+		if (result.error) {
 			await e.reply(`安装${name}失败,错误信息:\n${result.error}`);
 			return true;
 		}
@@ -237,9 +237,9 @@ class install {
 	}
 
 	/**
-     * 检查git是否安装
-     * @returns
-     */
+	 * 检查git是否安装
+	 * @returns
+	 */
 	async checkGit(e) {
 		let ret = await execSync('git --version', { encoding: 'utf-8' })
 		if (!ret || !ret.includes('git version')) {

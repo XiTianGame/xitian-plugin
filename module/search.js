@@ -23,38 +23,40 @@ class search {
 	 * @param name 插件名字
 	 * @param mode 0模糊查找 1精确查找
 	 */
-	async find(name, mode = 0) {
-		if(!name || /^.?(js|bak)$/.test(name)) return [];
+	async find(name, mode = 0, type = 'all') {
+		if (!name || /^.?(js|bak)$/.test(name)) return [];
 		const result = [];
 		//读取插件列表
 		await this.read();
 		//历遍文件查找关键字
-		for (let group of this.plugins.group)
-			Plugins.get(group).forEach((file) => {
+		if (type !== 'bin')
+			for (let group of this.plugins.group)
+				Plugins.get(group).forEach((file) => {
+					if (mode == 0) {
+						if (file.file.includes(name)) {
+							result.push(file)
+						}
+					} else {
+						let tmp = file.file.split(".");
+						if (tmp[0] == name) {
+							result.push(file)
+						}
+					}
+				});
+		//然后再看看辣姬箱
+		if (type !== 'use')
+			Plugins.get(this.plugins.bin).forEach((file) => {
 				if (mode == 0) {
 					if (file.file.includes(name)) {
 						result.push(file)
 					}
 				} else {
 					let tmp = file.file.split(".");
-					if (tmp[0] == name) {
+					if (tmp[0].replace(/\[.*?\]/g, "") == name) {
 						result.push(file)
 					}
 				}
 			});
-		//然后再看看辣姬箱
-		Plugins.get(this.plugins.bin).forEach((file) => {
-			if (mode == 0) {
-				if (file.file.includes(name)) {
-					result.push(file)
-				}
-			} else {
-				let tmp = file.file.split(".");
-				if (tmp[0].replace(/\[.*?\]/g, "") == name) {
-					result.push(file)
-				}
-			}
-		});
 		//返回插件路径，状态，名称，匹配个数
 		return result;
 	}
@@ -64,7 +66,7 @@ class search {
 	 */
 	async startwatch() {
 		for (let group of this.plugins.group) {
-			let path = PATH.join('./plugins',group);
+			let path = PATH.join('./plugins', group);
 			if (!fs.existsSync(path)) {
 				fs.mkdirSync(path)
 			}
@@ -74,7 +76,7 @@ class search {
 			fs.mkdirSync(this.plugins.bin)
 		}
 		await this.read();
-		this.watch(this.plugins.bin,this.plugins.bin, true)
+		this.watch(this.plugins.bin, this.plugins.bin, true)
 	}
 
 	/**
@@ -84,15 +86,15 @@ class search {
 		for (let group of this.plugins.group) {
 			if (Plugins.has(group)) continue;
 			let Infos = [];
-			for (let file of fs.readdirSync(PATH.join('./plugins',group))) {
-				Infos.push(await this.parse(PATH.join('./plugins',group,file)));
+			for (let file of fs.readdirSync(PATH.join('./plugins', group))) {
+				Infos.push(await this.parse(PATH.join('./plugins', group, file)));
 			}
 			Plugins.set(group, Infos)
 		}
 		if (!Plugins.has(this.plugins.bin)) {
 			let Infos = [];
 			for (let file of fs.readdirSync(this.plugins.bin)) {
-				Infos.push(await this.parse(PATH.join(this.plugins.bin,file), true));
+				Infos.push(await this.parse(PATH.join(this.plugins.bin, file), true));
 			}
 			Plugins.set(this.plugins.bin, Infos)
 		}
@@ -105,12 +107,12 @@ class search {
 	 * @param isBin 是否是回收站
 	 */
 	async parse(path, isBin = false) {
-		
+
 		path = PATH.join(path);
 		let tmp = PATH.parse(path)
 		const file = tmp.base;
 		//不存在该路径
-		if(!fs.existsSync(path)) return {
+		if (!fs.existsSync(path)) return {
 			type: '???',
 			file: file,
 			key: tmp.name,
@@ -147,7 +149,7 @@ class search {
 			default:
 				Info = Info.slice(0, 2);
 		}
-		const type = tmp.ext.replace(".","") || '???'
+		const type = tmp.ext.replace(".", "") || '???'
 		const state = isBin ? '已删除' : `${type === 'js' ? '启用' : type === 'bak' ? '停用' : '???'}`
 		const origin = (file.match(/\[.*?\]/) || [tmp.dir.split(divide).pop()])[0].replace(/\[|\]/g, '')
 		return {
@@ -171,7 +173,7 @@ class search {
 	 */
 	async watch(key, file, isBin = false) {
 		//防止重复监听
-		if(this.watcher.includes(key)) return;
+		if (this.watcher.includes(key)) return;
 		this.watcher.push(key)
 		//转换文件路径
 		const watcher = chokidar.watch(file, {
@@ -194,11 +196,11 @@ class search {
 			Plugins.set(key, tmp)
 		}).on("unlink", async (path) => {
 			let tmp = Plugins.get(key) || []
-			tmp = tmp.filter(item=>item.file !== PATH.parse(path).base);
+			tmp = tmp.filter(item => item.file !== PATH.parse(path).base);
 			Plugins.set(key, tmp)
 		}).on("unlinkDir", async (path) => {
 			let tmp = Plugins.get(key) || []
-			tmp = tmp.filter(item=>item.file !== PATH.parse(path).base);
+			tmp = tmp.filter(item => item.file !== PATH.parse(path).base);
 			Plugins.set(key, tmp)
 		}).on("error", (error) => {
 			logger.error(`[插件管理器]监听插件错误:\n${error}`)

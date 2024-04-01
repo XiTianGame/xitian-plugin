@@ -7,8 +7,8 @@ import fs from 'fs';
 
 const _path = process.cwd();//云崽目录
 
-let plugins = ConfigSet.getConfig("group","set");
-let exclude = ConfigSet.getConfig("exclude","set");
+let plugins = ConfigSet.getConfig("group", "set");
+let exclude = ConfigSet.getConfig("exclude", "set");
 
 export class Group extends plugin {
     constructor() {
@@ -68,7 +68,7 @@ export class Group extends plugin {
                 return true;
             }
         });
-        let path = PATH.join(_path,'plugins',group)
+        let path = PATH.join(_path, 'plugins', group)
         plugins.group.push(group);
         ConfigSet.saveSet("group", "set", "config", plugins);
         if (!fs.existsSync(path)) {
@@ -85,7 +85,7 @@ export class Group extends plugin {
         let group = e.msg.replace("#删除分组", "");
         let site = plugins.group.indexOf(group);
         //删除路径
-        let path = PATH.join(_path,'plugins',group);
+        let path = PATH.join(_path, 'plugins', group);
         if (fs.existsSync(path) && fs.statSync(path).isDirectory()) {
             let tmp = fs.readdirSync(path);
             if (tmp.length > 0) {
@@ -144,12 +144,12 @@ export class Group extends plugin {
         plugins.group = [];//清空一下group
         let ignore = exclude.rule;//排除列表
         ignore.push(PATH.normalize(plugins.bin).split("\\").pop());//排除列表加上辣姬箱目录
-        let pluginlist = fs.readdirSync(PATH.join(_path,'plugins'));
+        let pluginlist = fs.readdirSync(PATH.join(_path, 'plugins'));
         pluginlist.forEach(name => {
-            let path = PATH.join(_path,'plugins',name);
+            let path = PATH.join(_path, 'plugins', name);
             if (fs.statSync(path).isDirectory()) {
                 let key = fs.readdirSync(path)
-                if (key.includes("index.js") || (fs.existsSync(PATH.join(path,'.git')) && fs.statSync(PATH.join(path,'.git')).isDirectory()) || ignore.includes(name));//匹配排除正则
+                if (key.includes("index.js") || (fs.existsSync(PATH.join(path, '.git')) && fs.statSync(PATH.join(path, '.git')).isDirectory()) || ignore.includes(name));//匹配排除正则
                 else {
                     plugins.group.push(name);
                 }

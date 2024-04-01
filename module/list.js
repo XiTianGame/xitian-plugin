@@ -28,8 +28,8 @@ export default class list extends base {
         groups.forEach(group => {
             data.push({
                 group: group,
-                list: Plugin.get(group).filter(item=>{
-                    if(groupCfg.onlyJS && !['js','bak'].includes(item.type)) {
+                list: Plugin.get(group).filter(item => {
+                    if (groupCfg.onlyJS && !['js', 'bak'].includes(item.type)) {
                         return false
                     }
                     return true

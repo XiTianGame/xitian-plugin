@@ -14,7 +14,7 @@ class uninstall {
         if (!fs.existsSync(path)) return false;
         //包含git文件夹
         if (!fs.statSync(`${path}/.git`).isDirectory()) return false;
-        fs.rmdirSync(path,{recursive: true});
+        fs.rmdirSync(path, { recursive: true });
         await e.reply(`成功删除：${name}`);
         new Restart(e).restart();
         return true;

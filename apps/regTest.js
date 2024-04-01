@@ -25,47 +25,47 @@ export class regTest extends plugin {
         })
     }
 
-    async getrule(e){
-        if(!common.auth(e)) return true;
+    async getrule(e) {
+        if (!common.auth(e)) return true;
         let msgs = []
-        for(let plugin of loader.priority){
+        for (let plugin of loader.priority) {
             let p = new plugin.class(e);
             let msg = `插件名：${plugin.name}\n路径：${plugin.key}\n优先级：${plugin.priority}\n`
-            if(lodash.isEmpty(p.rule)){
+            if (lodash.isEmpty(p.rule)) {
                 msg += `无命令正则\n`
                 msgs.push(msg);
                 continue;
             }
-            for(let v in p.rule){
+            for (let v in p.rule) {
                 msg += `命令正则<${Number(v) + 1}>：${p.rule[v].reg}\n`
             }
             msgs.push(msg)
         }
-        msgs = lodash.chunk(msgs,50);
-        for(let i in msgs){
-            msgs[i] = await com.makeForwardMsg(e,msgs[i],`第${Number(i) + 1}页`);
+        msgs = lodash.chunk(msgs, 50);
+        for (let i in msgs) {
+            msgs[i] = await com.makeForwardMsg(e, msgs[i], `第${Number(i) + 1}页`);
             await e.reply(msgs[i]);
         }
         return true;
     }
 
-    async testrule(e){
-        if(!common.auth(e)) return true;
-        let key = e.msg.replace("#测试命令","");
+    async testrule(e) {
+        if (!common.auth(e)) return true;
+        let key = e.msg.replace("#测试命令", "");
         let msgs = [`命令<${key}>响应插件`]
-        for(let plugin of loader.priority){
+        for (let plugin of loader.priority) {
             let p = new plugin.class(e);
-            if(lodash.isEmpty(p.rule)) continue;
+            if (lodash.isEmpty(p.rule)) continue;
             let msg = ''
-            for(let v of p.rule){
-                if(new RegExp(v.reg).test(key)){
+            for (let v of p.rule) {
+                if (new RegExp(v.reg).test(key)) {
                     msg += `插件：${plugin.name}\n路径：${plugin.key}\n优先级：${plugin.priority}\n`
                     msg += `命令正则：${v.reg}\n执行方法：${v.fnc}`
                 }
             }
-            if(msg) msgs.push(msg);
+            if (msg) msgs.push(msg);
         }
-        msgs = await com.makeForwardMsg(e,msgs);
+        msgs = await com.makeForwardMsg(e, msgs);
         await e.reply(msgs);
         return true;
     }
