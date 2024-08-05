@@ -109,18 +109,21 @@ export class Install extends plugin {
 			return false;
 		}
 
-		if (e.raw_message.includes("请发送js插件") || e.raw_message.includes("发送的不是js插件呢")) {
+    //防止人机合一
+		if (e.raw_message.includes("发送非js文件，已取消本次安装") || e.raw_message.includes("发送的不是js插件呢")) {
 			return false;
 		}
 
+    let error = false
+
 		if (!e.file || !e.file.name.endsWith(".js")) {
-			e.reply([segment.at(e.user_id), '请发送js文件'])
-			return true;
+			e.reply([segment.at(e.user_id), '发送非js文件，已取消本次安装'])
+      error = true
 		}
 
-		if (e.message[0].size > config.maxSize) {
+		if (e.message[0]?.size > config.maxSize) {
 			e.reply("文件过大，已取消本次安装");
-			return true;
+      error = true
 		}
 
 		if (state.type == 1) {
@@ -132,6 +135,9 @@ export class Install extends plugin {
 				state.type = 0
 			}, config.timeout * 1000)
 		}
+
+    //有错误不走行安装逻辑
+    if(error) return true
 
 		let textPath = ConfigSet.group(config.default_group);
 		//获取下载链接
