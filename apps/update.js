@@ -299,10 +299,17 @@ export class update extends plugin {
         }
 
         /** 处理描述 */
-        forwardMsg.data = forwardMsg.data
-            .replace(/\n/g, '')
-            .replace(/<title color="#777777" size="26">(.+?)<\/title>/g, '___')
-            .replace(/___+/, `<title color="#777777" size="26">${title}</title>`)
+        if(typeof forwardMsg.data === 'object') {
+            let detail = forwardMsg.data?.meta?.detail
+            if (detail) {
+                detail.news = [{ text: dec }]
+            }
+        } else if(typeof forwardMsg.data === 'string') {
+            forwardMsg.data = forwardMsg.data
+                .replace(/\n/g, '')
+                .replace(/<title color="#777777" size="26">(.+?)<\/title>/g, '___')
+                .replace(/___+/, `<title color="#777777" size="26">${title}</title>`)
+        }
 
         return forwardMsg
     }
