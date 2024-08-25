@@ -27,8 +27,8 @@
       title: "#插件 xxx 重命名 xxx"
       desc: 重命名名为 xxx 的插件
     - icon: debug
-      title: "#测试命令 xxx"
-      desc: 测试响应指令的插件，用于解决冲突
+      title: "#测试(执行)命令 xxx"
+      desc: 测试(执行)响应指令的插件，用于解决冲突
     - icon: upload
       title: "#查看插件 xxx"
       desc: 发送名为 xxx 的插件

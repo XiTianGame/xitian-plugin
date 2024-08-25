@@ -1,0 +1,15 @@
+{
+  "name": "xitian-plugin",
+  "version": "2.0.0",
+  "author": "Xitian",
+  "description": "一个平平无奇的插件管理器",
+  "main": "app.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/XiTianGame/Yunzai-Bot.git"
+  },
+  "dependencies": {
+    "acorn": "^8.12.1"
+  }
+}

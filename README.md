@@ -1,14 +1,14 @@
-<p align="center">
-  <a href="https://github.com/XiTianGame/xitian-plugin">
-    <img width="400" src="resources/img/head.jpg">
-  </a>
-</p>
+![logo](resources/img/head.jpg)
+<div align=center>
+ <img src ="https://img.shields.io/github/stars/XiTianGame/xitian-plugin?"/>
+ <img src ="https://img.shields.io/github/issues/XiTianGame/xitian-plugin?logo=github"/>
+ <img src ="https://img.shields.io/github/license/XiTianGame/xitian-plugin"/>
+ <img src ="https://img.shields.io/github/languages/top/XiTianGame/xitian-plugin?logo=github"/>
+</div>
 
 # 插件管理器xitian-plugin
 
-## 不适配V2，V2装了直接G
-
-~~仅支持js类插件管理，不支持喵喵插件等大型插件管理~~
+仅支持js类插件管理，~~不支持喵喵插件等大型插件管理~~
 
 支持了一点，但不多(bushi)
 
@@ -45,37 +45,41 @@ js插件可以从[插件库](https://gitee.com/Hikari666/Yunzai-Bot-plugins-inde
 
 ## 使用说明
 
-### 重要
-
-如果插件出现报错，可能是因为跨版本配置不兼容问题
-
-可以尝试删除config目录下的配置文件然后重启
-
 ### 安装
 
 在[yunzai-bot](https://gitee.com/Le-niao/Yunzai-Bot)文件夹根目录打开cmd
 
 使用[github仓库](https://github.com/XiTianGame/xitian-plugin)
 ```bash
-git clone https://github.com/XiTianGame/xitian-plugin.git ./plugins/xitian-plugin/
+git clone --depth=1 https://github.com/XiTianGame/xitian-plugin.git ./plugins/xitian-plugin/
 ```
 
 使用[gitee仓库](https://gitee.com/XiTianGame/xitian-plugin)(可能更新不及时)
 ```bash
-git clone https://gitee.com/XiTianGame/xitian-plugin.git ./plugins/xitian-plugin/
+git clone --depth=1 https://gitee.com/XiTianGame/xitian-plugin.git ./plugins/xitian-plugin/
 ```
 
+### 安装依赖
+
+```bash
+pnpm install --filter=xitian-plugin
+```
+ps：插件管理器会自动进行依赖安装
+
+### 帮助
+
+插件加载完成后发送#插件帮助可以获取命令图
 
 ### 更新
 
 发送#插件更新进行插件管理器更新
 
-或者在xitian-plugin目录打开cmd手动git pull
+或者在xitian-plugin目录打开cmd手动`git pull`
 
 ### 链接
 
 - [云崽](https://gitee.com/Le-niao/Yunzai-Bot)
-- [插件库](https://gitee.com/Hikari666/Yunzai-Bot-plugins-index)
+- [插件库](https://gitee.com/yhArcadia/Yunzai-Bot-plugins-index)
 
 ### 指令
 
@@ -96,5 +100,7 @@ git clone https://gitee.com/XiTianGame/xitian-plugin.git ./plugins/xitian-plugin
 
 - 素材来源于网络，仅供交流学习使用
 - 严禁用于商业和非法用途
-- 暂无群号，出现问题可以提交issue
+- 暂无群号，出现问题可以提交issue（建议github，因为有邮件提醒）
 - 最后求个star~
+
+[![Star History Chart](https://api.star-history.com/svg?repos=XiTianGame/xitian-plugin&type=Date)](https://star-history.com/#XiTianGame/xitian-plugin&Date)

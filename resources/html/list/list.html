@@ -7,8 +7,8 @@
       type="text/css"
       href="{{pluResPath}}html/list/list.css"
     />
-    <link rel="preload" href="{{resPath}}font/tttgbnumber.ttf" as="font" />
-    <link rel="preload" href="{{pluResPath}}font/genshin.ttf" as="font">
+    <link rel="preload" href="{{pluResPath}}font/tttgbnumber.ttf" as="font" />
+    <link rel="preload" href="{{pluResPath}}font/HYWenHei-55W.ttf" as="font">
     <link rel="preload" href="{{pluResPath}}img/list/head.jpg" as="image" />
     <link rel="preload" href="{{pluResPath}}img/list/body.jpg" as="image" />
     <link rel="shortcut icon" href="#" />
@@ -23,7 +23,7 @@
       {{each listData val}}
       <div class="data_box">
         <div class="tab_lable">
-          {{val.group.replace(/plugins|\//g,'')}}
+          {{val.group}}
         </div>
         <div class="list">
           {{each val.list item}}
@@ -38,7 +38,7 @@
         </div>
       </div>
       {{/each}}
-      <div class="logo">Created By Yunzai-Bot & Xitian-Plugin</div>
+      <div class="logo">Created By {{yunzai}} & {{xitian}}</div>
     </div>
   </body>
 </html>
