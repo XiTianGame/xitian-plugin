@@ -12,8 +12,9 @@ class pluginLoader {
     /** 监听文件夹 */
     this.dir = './plugins'
     /** 垃圾桶 */
-    this.bin = PATH.relative(this.dir, config.getConfig('group', 'set').bin)
-    fs.existsSync(this.bin) || fs.mkdirSync(this.bin, { recursive: true })
+    const bin = config.getConfig('group', 'set').bin
+    this.bin = PATH.relative(this.dir, bin)
+    fs.existsSync(bin) || fs.mkdirSync(bin, { recursive: true })
     /** 插件包标志 */
     this.pkgFlag = ['index.js']
     fs.existsSync(this.dir) || fs.mkdirSync(this.dir, { recursive: true })
