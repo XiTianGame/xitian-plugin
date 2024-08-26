@@ -233,12 +233,21 @@ class install {
     if (!await this.checkGit(e)) return true
 
     /**执行安装命令 */
-    let command = `git clone ${url}`
-    let result = await this.execSync(command, {cwd: path.join(process.cwd(), 'plugins')})
+    const result = await this.execSync(`git clone ${url}`, { cwd: path.join(process.cwd(), 'plugins') })
 
     if (result.error) {
       await e.reply(`安装${name}失败，错误信息：\n${result.error}`)
       return true
+    }
+
+    if (this.config.install_package && fs.existsSync(path.join(path.join('./plugins', name, 'package.json')))) {
+      await e.reply(`安装插件${name}依赖...`)
+      const res = await this.addPak(path.join(process.cwd(), 'plugins', name))
+      if (res.error) {
+        await e.reply(`安装依赖失败，错误信息：\n${res.error}`)
+      } else {
+        await e.reply(`安装依赖成功`)
+      }
     }
     /**重启云崽 */
     await e.reply('安装成功！即将进行重启...')
@@ -271,6 +280,14 @@ class install {
       return false
     }
     return true
+  }
+
+  async addPak(cwd = process.cwd()) {
+    let npm = 'npm'
+    if (fs.existsSync('node_modules/.pnpm')) npm = 'pnpm'
+    if (fs.existsSync('node_modules/.yarn-integrity')) npm = 'yarn'
+    if (fs.existsSync('node_modules/.cache')) npm = 'bun'
+    return this.execSync(`${npm} install`, { cwd })
   }
 
   /**

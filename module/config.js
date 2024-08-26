@@ -192,10 +192,14 @@ class ConfigSet {
    */
   assign(app, name) {
     const file = this.getFilePath(app, name, 'config')
-    if (!fs.existsSync(file)) return
-    const config = this.getConfig(name)
+    if (!fs.existsSync(file)) {
+      this.cpCfg(app, name)
+      return true
+    }
+    const config = this.getConfig(app, name)
     this.cpCfg(app, name, true)
-    this.saveSet(name, 'config', config)
+    delete this.config[`${app}.${name}`]//太快了要手动删一下
+    this.saveSet(app, name, 'config', config)
     return true
   }
 

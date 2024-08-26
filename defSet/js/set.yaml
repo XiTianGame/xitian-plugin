@@ -10,3 +10,5 @@ auto_install: true
 auto_check: true
 #插件安装等待时间，单位秒
 timeout: 60
+#是否尝试安装依赖
+install_package: true
