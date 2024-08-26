@@ -167,7 +167,7 @@ class ConfigSet {
       if (type == 'defSet') {
         throw new Error(`不存在默认配置文件[${app}][${name}]`)
       } else {
-        this.cpCfg(name)
+        this.cpCfg(app, name)
       }
     }
   }
@@ -194,7 +194,7 @@ class ConfigSet {
     const file = this.getFilePath(app, name, 'config')
     if (!fs.existsSync(file)) return
     const config = this.getConfig(name)
-    this.cpCfg(name, true)
+    this.cpCfg(app, name, true)
     this.saveSet(name, 'config', config)
     return true
   }
