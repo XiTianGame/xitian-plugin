@@ -214,7 +214,7 @@ class install {
       url = url + '.git';
     }
     /**插件名 */
-    let name = new URL(url).pathname.replace('/', '')
+    let name = path.basename(new URL(url).pathname.replace(/.git$/, ''))
     e.reply(`开始安装：${name}`)
 
     /**检查链接和插件 */
@@ -240,7 +240,7 @@ class install {
       return true
     }
 
-    if (this.config.install_package && fs.existsSync(path.join(path.join('./plugins', name, 'package.json')))) {
+    if (this.config.install_package && fs.existsSync(path.join('./plugins', name, 'package.json'))) {
       await e.reply(`安装插件${name}依赖...`)
       const res = await this.addPak(path.join(process.cwd(), 'plugins', name))
       if (res.error) {
