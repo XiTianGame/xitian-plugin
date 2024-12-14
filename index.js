@@ -13,7 +13,7 @@ const version = (versionData && versionData.length && versionData[0].version) ||
 logger.info(`-----------＾ω＾----------`)
 logger.info(`插件管理器${version}初始化~`)
 
-if (!fs.existsSync(config.baseDir + '/node_modules/acorn')) {
+if (!await import('acorn').catch(() => { })) {
   logger.warn('检测到未安装依赖包，尝试安装中...')
   let npm = 'npm'
   if (fs.existsSync('node_modules/.pnpm')) npm = 'pnpm'
@@ -21,7 +21,7 @@ if (!fs.existsSync(config.baseDir + '/node_modules/acorn')) {
   if (fs.existsSync('node_modules/.cache')) npm = 'bun'
   try {
     logger.info('安装完成，输出：\n' + execSync(`${npm} install`, { cwd: config.baseDir }))
-  } catch(err) {
+  } catch (err) {
     logger.error('安装失败，错误信息：' + err)
   }
 }
