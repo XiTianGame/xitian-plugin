@@ -68,7 +68,7 @@ export class update extends plugin {
     const data = await new Version(this.e).getData(
       this.versionData.slice(0, 3)
     );
-    let img = await puppeteer.screenshot('version', data);
+    let img = await puppeteer.screenshot('xitian-plugin/version', data);
     this.e.reply(img);
   }
 

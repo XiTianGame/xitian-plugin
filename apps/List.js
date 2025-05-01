@@ -37,7 +37,7 @@ export class List extends plugin {
     }
     const data = await new list(e).getData();
 
-    let img = await puppeteer.screenshot('list', data);
+    let img = await puppeteer.screenshot('xitian-plugin/list', data);
     e.reply(img)
     return true;
   }

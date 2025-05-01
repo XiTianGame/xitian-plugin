@@ -41,7 +41,7 @@ export class help extends plugin {
     let tmp = md5(JSON.stringify(data));
     if (helpData.md5 == tmp) return helpData.img;
 
-    helpData.img = await puppeteer.screenshot('help', data);
+    helpData.img = await puppeteer.screenshot('xitian-plugin/help', data);
     helpData.md5 = tmp;
 
     return helpData.img;
